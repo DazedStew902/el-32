@@ -1464,3 +1464,170 @@ body {
     transition: none !important;
   }
 }
+
+/* =====================================================================
+   El 32 — Contact Form (Inner Page, Non-boxy)
+   Goals:
+   - Clean, consistent typography
+   - “Glass line” structure (no heavy cards)
+   - Mobile-first, looks great on desktop too
+===================================================================== */
+
+.form-note {
+  margin: 0 0 14px;
+  font: 520 14px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.form-note--success {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.90);
+  text-shadow:
+    0 0 12px rgba(212, 28, 139, 0.18),
+    0 0 18px rgba(222, 12, 28, 0.14);
+}
+
+.contact-form {
+  margin-top: 10px;
+  display: grid;
+  gap: 14px;
+}
+
+.form-grid {
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 820px) {
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 14px;
+  }
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.field:first-child {
+  border-top-color: rgba(255, 255, 255, 0.14);
+}
+
+.field--full {
+  grid-column: 1 / -1;
+}
+
+.field__label {
+  font: 650 12px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.field__control {
+  width: 100%;
+  border: 0;
+  border-radius: 16px;
+
+  padding: 12px 12px;
+
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.10) inset;
+
+  color: rgba(255, 255, 255, 0.92);
+  font: 520 14px/1.35 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+  outline: none;
+  transition: box-shadow 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.field__control--textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+
+.field__control::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.field__control:focus-visible {
+  box-shadow:
+    0 0 0 3px rgba(237, 203, 19, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+  background: rgba(0, 0, 0, 0.42);
+}
+
+.form-btn {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+
+  width: fit-content;
+  margin: 2px auto 0;
+  padding: 10px 14px;
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+
+  color: rgba(255, 255, 255, 0.92);
+  font: 650 12px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+
+  text-shadow:
+    0 0 12px rgba(212, 28, 139, 0.22),
+    0 0 18px rgba(222, 12, 28, 0.18);
+
+  transition: transform 160ms ease, background 160ms ease, box-shadow 180ms ease, opacity 160ms ease;
+}
+
+.form-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  opacity: 0.98;
+}
+
+.form-btn:active {
+  transform: scale(0.985);
+}
+
+.form-btn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(237, 203, 19, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.14) inset;
+}
+
+/* Honeypot hidden */
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .field__control,
+  .form-btn {
+    transition: none !important;
+  }
+}
+
+/* Contact page failsafe: if reveal JS fails, still show content */
+.page--contact [data-reveal] {
+  opacity: 1;
+  transform: none;
+}

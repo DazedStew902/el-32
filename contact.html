@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- =========================================================
+         El 32 — Contact Page
+         Purpose:
+         - Inner page with logo-only header (consistent)
+         - Contact form (static-site friendly)
+         Notes:
+         - Uses Web3Forms endpoint (no backend needed)
+    ========================================================== -->
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Contact — El 32</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+
+    <!-- Accent font used on landing; kept for consistency -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <main class="page page--contact" aria-label="Contact El 32">
+      <!-- Liquid filter defs (for lightfield distortion) -->
+      <svg class="fx" width="0" height="0" aria-hidden="true" focusable="false">
+        <filter id="el32-liquid">
+          <feTurbulence
+            id="el32-turbulence"
+            type="fractalNoise"
+            baseFrequency="0.012 0.018"
+            numOctaves="2"
+            seed="2"
+            stitchTiles="stitch"
+            result="noise"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="28"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </svg>
+
+      <!-- Animated color veil (fixed ambience) -->
+      <div class="page__veil" aria-hidden="true"></div>
+
+      <!-- Ambient Light Field (fixed ambience) -->
+      <div class="lightfield" aria-hidden="true"></div>
+
+      <!-- Scrollable content -->
+      <div class="page__scroll">
+        <header class="page__header" role="banner">
+          <a
+            class="page__logo-link"
+            href="index.html"
+            aria-label="Back to home"
+          >
+            <img
+              class="page__logo"
+              src="assets/images/el32-logo.svg"
+              alt="El 32"
+              decoding="async"
+            />
+          </a>
+          <p class="page__logo-hint" aria-hidden="true">
+            Tap logo to return home
+          </p>
+        </header>
+
+        <section class="page__content" aria-label="Contact form">
+          <h1 class="page__title" data-reveal>Contact</h1>
+
+          <!-- Success message (shows after redirect back with ?sent=1) -->
+          <p
+            class="form-note form-note--success"
+            role="status"
+            hidden
+            data-form-success
+          >
+            Message sent. We’ll get back to you soon.
+          </p>
+
+          <p class="form-note" data-reveal>
+            Questions, bookings, or event inquiries — send us a message.
+          </p>
+
+          <form
+            class="contact-form"
+            action="https://api.web3forms.com/submit"
+            method="POST"
+            data-reveal
+          >
+            <input
+              type="hidden"
+              name="access_key"
+              value="51130799-9aaf-4dc0-9486-a20014d8f0fd"
+            />
+
+            <!-- Optional but helpful -->
+            <input
+              type="hidden"
+              name="subject"
+              value="New message from el-32.com"
+            />
+            <input type="hidden" name="from_name" value="El 32 Website" />
+
+            <!-- Redirect back to this page with a flag -->
+            <input
+              type="hidden"
+              name="redirect"
+              value="https://el-32.com/contact.html?sent=1"
+            />
+
+            <!-- Anti-spam honeypot (leave hidden) -->
+            <input
+              class="hp-field"
+              type="text"
+              name="website"
+              tabindex="-1"
+              autocomplete="off"
+            />
+
+            <div class="form-grid">
+              <label class="field">
+                <span class="field__label">Name</span>
+                <input
+                  class="field__control"
+                  type="text"
+                  name="name"
+                  autocomplete="name"
+                  required
+                />
+              </label>
+
+              <label class="field">
+                <span class="field__label">Email</span>
+                <input
+                  class="field__control"
+                  type="email"
+                  name="email"
+                  autocomplete="email"
+                  required
+                />
+              </label>
+
+              <label class="field field--full">
+                <span class="field__label">¿Qué pasa?</span>
+                <textarea
+                  class="field__control field__control--textarea"
+                  name="message"
+                  rows="6"
+                  required
+                ></textarea>
+              </label>
+            </div>
+
+            <button class="form-btn" type="submit">Send Message</button>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <script src="js/main.js"></script>
+
+    <!-- Tiny helper: show success message after redirect -->
+    <script>
+      (() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get("sent") === "1") {
+          const el = document.querySelector("[data-form-success]");
+          if (el) el.hidden = false;
+        }
+      })();
+    </script>
+  </body>
+</html>
