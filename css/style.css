@@ -1631,3 +1631,9 @@ body {
   opacity: 1;
   transform: none;
 }
+
+.h-captcha {
+  display: grid;
+  place-items: center;
+  margin-top: 6px;
+}
