@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- =========================================================
+         El 32 — Events Page
+         Purpose:
+         - Consistent inner page layout (matches About/Menu)
+         - Easy-to-edit event cards (image + title + description)
+         - Mobile-first, responsive for desktop
+    ========================================================== -->
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Events — El 32</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+
+    <!-- Accent font used on landing; kept for consistency -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <main class="page page--events" aria-label="El 32 events">
+      <!-- Fixed ambience layers -->
+      <div class="page__veil" aria-hidden="true"></div>
+
+      <svg class="fx" width="0" height="0" aria-hidden="true" focusable="false">
+        <filter id="el32-liquid">
+          <feTurbulence
+            id="el32-turbulence"
+            type="fractalNoise"
+            baseFrequency="0.012 0.018"
+            numOctaves="2"
+            seed="2"
+            stitchTiles="stitch"
+            result="noise"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="28"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </svg>
+
+      <div class="lightfield" aria-hidden="true"></div>
+
+      <!-- Scrollable content only -->
+      <div class="page__scroll">
+        <header class="page__header" role="banner">
+          <a
+            class="page__logo-link"
+            href="index.html"
+            aria-label="Back to home"
+          >
+            <img
+              class="page__logo"
+              src="assets/images/el32-logo.svg"
+              alt="El 32"
+              decoding="async"
+            />
+          </a>
+
+          <p class="page__logo-hint" aria-hidden="true">
+            Tap logo to return home
+          </p>
+        </header>
+        <div class="events-hidden" hidden>
+          <section class="page__content" aria-label="Upcoming Events">
+            <h1 class="page__title" data-reveal>Upcoming Events</h1>
+
+            <div class="events-grid" data-reveal-group>
+              <!-- =====================================================
+                 EVENT TEMPLATE
+                 - Duplicate an <article> block to add events
+                 - Replace image src + title + description
+            ====================================================== -->
+
+              <article class="event-card" data-reveal-item>
+                <div class="event-card__media" aria-hidden="true">
+                  <picture>
+                    <!-- Mobile (optional) -->
+                    <!-- <source srcset="assets/images/events/event-1-900.jpg" media="(max-width: 520px)" /> -->
+                    <img
+                      src="assets/images/events/event-1-1600.jpg"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      width="1600"
+                      height="1000"
+                    />
+                  </picture>
+                </div>
+
+                <div class="event-card__body">
+                  <h2 class="event-card__title">Event Title</h2>
+                  <p class="event-card__desc">Event Description.</p>
+                </div>
+              </article>
+
+              <article class="event-card" data-reveal-item>
+                <div class="event-card__media" aria-hidden="true">
+                  <picture>
+                    <img
+                      src="assets/images/events/event-2-1600.jpg"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      width="1600"
+                      height="1000"
+                    />
+                  </picture>
+                </div>
+
+                <div class="event-card__body">
+                  <h2 class="event-card__title">Event Title</h2>
+                  <p class="event-card__desc">Event Desription.</p>
+                </div>
+              </article>
+
+              <article class="event-card" data-reveal-item>
+                <div class="event-card__media" aria-hidden="true">
+                  <picture>
+                    <img
+                      src="assets/images/events/event-3-1600.jpg"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      width="1600"
+                      height="1000"
+                    />
+                  </picture>
+                </div>
+
+                <div class="event-card__body">
+                  <h2 class="event-card__title">Event Title</h2>
+                  <p class="event-card__desc">Event Description.</p>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+        <!-- /.events-hidden -->
+        <div class="events-coming-soon" aria-live="polite">Coming Soon</div>
+      </div>
+    </main>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>

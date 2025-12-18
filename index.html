@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- =========================================================
+         El 32 — Minimal Landing (Phase 1)
+         Purpose:
+         - Full-viewport background image (responsive)
+         - Centered logo
+         - No navigation or UI yet (built later)
+         Notes:
+         - Uses <picture> for proper responsive image loading
+         - Uses async decode + eager loading (hero above the fold)
+    ========================================================== -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>El 32</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+    <!-- =========================================================
+     Fonts: Tagline accent (subtle party script)
+    ========================================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+  rel="stylesheet"
+/>
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+/>
+  </head>
+
+  <body class="is-landing">
+    <!-- =========================================================
+         HERO: Full-screen background image
+         - Replace image paths with your actual assets
+         - Recommended: WebP + JPG fallback
+    ========================================================== -->
+    <main class="landing" aria-label="El 32 landing">
+      <!-- =========================================================
+     HERO: Full-screen background image (responsive)
+     - Uses assets/images/ based on your folder structure
+     - WebP sources are optional; keep them only if files exist
+========================================================== -->
+      <picture class="landing__bg" aria-hidden="true">
+        <source
+          srcset="assets/images/landing-desktop.jpg"
+          type="image/jpeg"
+          media="(min-width: 900px)"
+        />
+        <img
+          src="assets/images/landing-mobile.jpg"
+          alt=""
+          loading="eager"
+          decoding="async"
+        />
+      </picture>
+      <!-- =========================================================
+     Ambient Light Field (Organic)
+     - Soft animated color wash using SVG turbulence distortion
+     - Runs smoothly on mobile/desktop (single layer + GPU-friendly)
+    ========================================================== -->
+      <svg class="fx" width="0" height="0" aria-hidden="true" focusable="false">
+        <filter id="el32-liquid">
+          <feTurbulence
+            id="el32-turbulence"
+            type="fractalNoise"
+            baseFrequency="0.012 0.018"
+            numOctaves="2"
+            seed="2"
+            stitchTiles="stitch"
+            result="noise"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="28"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </svg>
+
+      <div class="lightfield" aria-hidden="true"></div>
+
+      <!-- =========================================================
+           CENTERED LOGO
+           - Use SVG if possible for crispness
+           - PNG also fine (transparent background recommended)
+      ========================================================== -->
+      <div class="landing__center">
+        <img
+          class="landing__logo"
+          src="assets/images/el32-logo.svg"
+          alt="El 32"
+          decoding="async"
+          data-logo
+          tabindex="0"
+        />
+
+        <!-- =========================================================
+     TAGLINE (Bilingual Toggle)
+     - Tap/click to toggle Spanish ↔ English
+     - Kept subtle + centered under logo
+========================================================== -->
+<button
+  class="tagline"
+  type="button"
+  data-tagline
+  data-lang="es"
+  aria-pressed="false"
+  aria-label="Translate tagline"
+>
+  <span data-es>Llevando la fiesta a Lynchburg</span>
+  <span data-en hidden>Bringing the party to Lynchburg</span>
+</button>
+
+        <!-- =========================================================
+       PRIMARY MENU
+       - Sits directly under logo
+       - Button toggles an animated menu panel (mobile + desktop)
+       - Accessible: aria-expanded, aria-controls, Escape to close
+  ========================================================== -->
+        <div class="menu" data-menu>
+          <button
+            class="menu__toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="primaryMenu"
+            data-menu-toggle
+          >
+            <span class="menu__toggle-label">Discover</span>
+            <span class="menu__toggle-icon" aria-hidden="true">
+              <span></span><span></span>
+            </span>
+          </button>
+
+          <nav
+            id="primaryMenu"
+            class="menu__panel"
+            aria-label="Primary navigation"
+            data-menu-panel
+            hidden
+          >
+            <ul class="menu__list" role="list">
+              <!-- File structure-based routes -->
+              </li>
+              <li class="menu__item">
+                <a class="menu__link" href="about.html">About</a>
+              </li>
+              <li class="menu__item">
+                <a class="menu__link" href="menu.html">Menu</a>
+              </li>
+              <li class="menu__item">
+                <a class="menu__link" href="events.html">Events</a>
+              </li>
+              <li class="menu__item">
+                <a class="menu__link" href="party.html">Party</a>
+              </li>
+              <li class="menu__item">
+                <a class="menu__link" href="contact.html">Contact</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </main>
+    <script src="js/main.js"></script>
+  </body>
+</html>

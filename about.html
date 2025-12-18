@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- =========================================================
+         El 32 — About Page
+         Purpose:
+         - Simple inner page with logo-only header
+         - Consistent ambience (background + lightfield)
+         - Content: Hours (first section)
+         Notes:
+         - Reuses global CSS + main.js (scripts are defensive)
+    ========================================================== -->
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>About — El 32</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+
+    <!-- Accent font used on landing; kept for consistency -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <!-- =========================================================
+         PAGE WRAPPER
+         - Fixed ambience layers
+         - Scrollable content layer
+    ========================================================== -->
+    <main class="page page--about" aria-label="About El 32">
+      <!-- Liquid filter defs (for lightfield distortion) -->
+      <svg class="fx" width="0" height="0" aria-hidden="true" focusable="false">
+        <filter id="el32-liquid">
+          <feTurbulence
+            id="el32-turbulence"
+            type="fractalNoise"
+            baseFrequency="0.012 0.018"
+            numOctaves="2"
+            seed="2"
+            stitchTiles="stitch"
+            result="noise"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="28"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </svg>
+
+      <!-- Animated color veil (fixed ambience) -->
+      <div class="page__veil" aria-hidden="true"></div>
+
+      <!-- Ambient Light Field (fixed ambience) -->
+      <div class="lightfield" aria-hidden="true"></div>
+
+      <!-- =========================================================
+           SCROLLABLE CONTENT
+      ========================================================== -->
+      <div class="page__scroll">
+        <!-- HEADER (Logo only) -->
+        <header class="page__header" role="banner">
+          <a
+            class="page__logo-link"
+            href="index.html"
+            aria-label="Back to home"
+          >
+            <img
+              class="page__logo"
+              src="assets/images/el32-logo.svg"
+              alt="El 32"
+              decoding="async"
+            />
+          </a>
+
+          <!-- Subtle navigation hint -->
+          <p class="page__logo-hint" aria-hidden="true">
+            Tap logo to return home
+          </p>
+        </header>
+
+        <!-- CONTENT -->
+        <section class="page__content" aria-label="Hours">
+          <h1 class="page__title" data-reveal>Hours</h1>
+
+          <dl class="hours" aria-label="Establishment hours">
+            <div class="hours__row" data-reveal-item>
+              <dt class="hours__day">Wednesday</dt>
+              <dd class="hours__time">8pm–2am</dd>
+            </div>
+
+            <div class="hours__row" data-reveal-item>
+              <dt class="hours__day">Thursday</dt>
+              <dd class="hours__time">8pm–2am</dd>
+            </div>
+
+            <div class="hours__row" data-reveal-item>
+              <dt class="hours__day">Friday</dt>
+              <dd class="hours__time">8pm–2am</dd>
+            </div>
+
+            <div class="hours__row" data-reveal-item>
+              <dt class="hours__day">Saturday</dt>
+              <dd class="hours__time">8pm–2am</dd>
+            </div>
+          </dl>
+        </section>
+      </div>
+    </main>
+
+    <!-- Global scripts -->
+    <script src="js/main.js"></script>
+  </body>
+</html>

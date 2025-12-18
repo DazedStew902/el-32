@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- =========================================================
+         El 32 — Menu Page
+         Purpose:
+         - Simple inner page with logo-only header
+         - Black base + animated color ambience
+         - Menu items with image placeholders (responsive)
+         - Clean load-in reveals (reuses global reveal system)
+    ========================================================== -->
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Menu — El 32</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+
+    <!-- Accent font used on landing; kept for consistency -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <!-- =========================================================
+         PAGE WRAPPER
+         - Fixed ambience layers
+         - Scrollable content layer
+    ========================================================== -->
+    <main class="page page--menu" aria-label="El 32 menu">
+      <!-- Animated color veil (fixed ambience) -->
+      <div class="page__veil" aria-hidden="true"></div>
+
+      <!-- Liquid filter defs (for lightfield distortion) -->
+      <svg class="fx" width="0" height="0" aria-hidden="true" focusable="false">
+        <filter id="el32-liquid">
+          <feTurbulence
+            id="el32-turbulence"
+            type="fractalNoise"
+            baseFrequency="0.012 0.018"
+            numOctaves="2"
+            seed="2"
+            stitchTiles="stitch"
+            result="noise"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="28"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </svg>
+
+      <!-- Ambient Light Field (fixed ambience) -->
+      <div class="lightfield" aria-hidden="true"></div>
+
+      <!-- =========================================================
+           SCROLLABLE CONTENT
+      ========================================================== -->
+      <div class="page__scroll">
+        <!-- HEADER (Matches About) -->
+        <header class="page__header" role="banner">
+          <a
+            class="page__logo-link"
+            href="index.html"
+            aria-label="Back to home"
+          >
+            <img
+              class="page__logo"
+              src="assets/images/el32-logo.svg"
+              alt="El 32"
+              decoding="async"
+            />
+          </a>
+
+          <p class="page__logo-hint" aria-hidden="true">
+            Tap logo to return home
+          </p>
+        </header>
+
+        <!-- CONTENT -->
+        <section class="page__content" aria-label="Menu">
+          <h1 class="page__title" data-reveal>Menu</h1>
+
+          <div class="menu-grid" data-reveal-group>
+            <!-- 1) Bacon Cheese Fries -->
+            <article class="menu-card" data-reveal-item>
+              <div class="menu-card__media" aria-hidden="true">
+                <picture>
+                  <!-- Optional WebP (use if you have it) -->
+                  <!-- <source srcset="assets/images/menu/bacon-cheese-fries.webp" type="image/webp" /> -->
+
+                  <!-- JPG/PNG fallback -->
+                  <img
+                    src="assets/images/bacon-cheese-fries.jpg"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    width="1600"
+                    height="1000"
+                  />
+                </picture>
+              </div>
+
+              <div class="menu-card__body">
+                <h2 class="menu-card__name">Bacon Cheese Fries</h2>
+                <p class="menu-card__desc">
+                  Crispy golden fries piled high with melted cheese and smoky
+                  bacon, finished with a warm, salty crunch that hits perfect
+                  with a late-night drink.
+                </p>
+              </div>
+            </article>
+
+            <!-- 2) Classic Cheese Burger -->
+            <article class="menu-card" data-reveal-item>
+              <div class="menu-card__media" aria-hidden="true">
+                <picture>
+                  <!-- <source srcset="assets/images/menu/classic-cheeseburger.webp" type="image/webp" /> -->
+                  <img
+                    src="assets/images/classic-cheeseburger.jpg"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    width="1600"
+                    height="1000"
+                  />
+                </picture>
+              </div>
+
+              <div class="menu-card__body">
+                <h2 class="menu-card__name">Classic Cheese Burger</h2>
+                <p class="menu-card__desc">
+                  Juicy, griddled beef with melty cheese on a toasted
+                  bun—simple, loud, and done right. Served with fries.
+                </p>
+              </div>
+            </article>
+
+            <!-- 3) Mango Habanero Wings -->
+            <article class="menu-card" data-reveal-item>
+              <div class="menu-card__media" aria-hidden="true">
+                <picture>
+                  <!-- <source srcset="assets/images/menu/mango-habanero-wings.webp" type="image/webp" /> -->
+                  <img
+                    src="assets/images/mango-habanero-wings.jpg"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    width="1600"
+                    height="1000"
+                  />
+                </picture>
+              </div>
+
+              <div class="menu-card__body">
+                <h2 class="menu-card__name">Mango Habanero Wings</h2>
+                <p class="menu-card__desc">
+                  Sweet mango up front, habanero heat on the finish—sticky,
+                  glossy, and addictive. Served with fries, ranch, carrots, and
+                  celery.
+                </p>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>

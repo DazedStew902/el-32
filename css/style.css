@@ -1,0 +1,1466 @@
+/* =====================================================================
+   El 32 — Minimal Landing Styles (Phase 1)
+   Goals:
+   - Fullscreen responsive background image
+   - Centered logo
+   - No navigation/UI until later phases
+   Notes:
+   - Uses safe viewport units for mobile (svh) to reduce “jumping”
+===================================================================== */
+
+/* =========================
+   1) Base Reset
+========================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  width: 100%;
+
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Landing page only: lock scrolling + rubber-band */
+body.is-landing {
+  overflow: hidden;
+  position: fixed;
+  width: 100%
+}
+
+body {
+  background: #000;
+  color: #fafafa;
+
+  /* Allow scrolling on inner pages */
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* =========================
+   2) Landing Layout + Layer Stack
+   Explicit stacking order:
+   0 — Background image
+   1 — Dark overlay
+   2 — Light streaks
+   3 — Logo + spotlight
+========================= */
+.landing {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 100vh;
+
+  isolation: isolate; /* predictable z-index */
+
+  /* Performance: prevents outside layout/paint invalidation */
+  contain: layout paint;
+}
+
+/* Background image */
+.landing__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+
+  /* Performance: isolates this layer */
+  contain: paint;
+}
+
+.landing__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Dark overlay (readability layer) */
+.landing::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+
+  background: radial-gradient(
+    900px 600px at 50% 55%,
+    rgba(0, 0, 0, 0.25),
+    rgba(0, 0, 0, 0.55)
+  );
+}
+
+/* Logo container — TOP layer */
+.landing__center {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  /* Pull the entire group slightly upward */
+  transform: translateY(-4vh);
+
+  padding: 24px;
+  gap: 6px; /* controls overall tightness */
+
+  contain: layout paint;
+}
+
+/* Logo sizing (responsive + restrained) */
+.landing__logo {
+  position: relative;
+  width: min(320px, 70vw);
+  height: auto;
+  z-index: 1;
+
+  filter:
+    brightness(1.15)
+    contrast(1.1)
+    drop-shadow(0 0 18px rgba(222, 12, 28, 0.28))
+    drop-shadow(0 0 22px rgba(212, 28, 139, 0.22));
+
+  opacity: 0;
+  transform: scale(0.965);
+  animation: el32-voltage-flicker 2200ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: opacity, transform, filter;
+
+  /* Performance: avoid extra compositing artifacts on mobile */
+  backface-visibility: hidden;
+}
+
+@keyframes el32-voltage-flicker {
+  0% {
+    opacity: 0;
+    transform: scale(0.965);
+    filter:
+      brightness(0.88)
+      contrast(1.0)
+      drop-shadow(0 0 0 rgba(222, 12, 28, 0))
+      drop-shadow(0 0 0 rgba(212, 28, 139, 0));
+  }
+  16% {
+    opacity: 1;
+    transform: scale(1);
+    filter:
+      brightness(0.98)
+      contrast(1.05)
+      drop-shadow(0 0 4px rgba(222, 12, 28, 0.08))
+      drop-shadow(0 0 6px rgba(212, 28, 139, 0.06));
+  }
+  26% {
+    filter:
+      brightness(1.40)
+      contrast(1.22)
+      drop-shadow(0 0 40px rgba(222, 12, 28, 0.40))
+      drop-shadow(0 0 46px rgba(212, 28, 139, 0.34));
+  }
+  31% {
+    filter:
+      brightness(1.05)
+      contrast(1.10)
+      drop-shadow(0 0 14px rgba(222, 12, 28, 0.20))
+      drop-shadow(0 0 16px rgba(212, 28, 139, 0.16));
+  }
+  35% {
+    filter:
+      brightness(1.32)
+      contrast(1.20)
+      drop-shadow(0 0 34px rgba(222, 12, 28, 0.36))
+      drop-shadow(0 0 40px rgba(212, 28, 139, 0.30));
+  }
+  39% {
+    opacity: 0.92;
+    filter:
+      brightness(0.98)
+      contrast(1.06)
+      drop-shadow(0 0 10px rgba(222, 12, 28, 0.14))
+      drop-shadow(0 0 12px rgba(212, 28, 139, 0.12));
+  }
+  44% {
+    opacity: 1;
+    filter:
+      brightness(1.38)
+      contrast(1.22)
+      drop-shadow(0 0 38px rgba(222, 12, 28, 0.38))
+      drop-shadow(0 0 44px rgba(212, 28, 139, 0.32));
+  }
+  49% {
+    filter:
+      brightness(1.12)
+      contrast(1.12)
+      drop-shadow(0 0 16px rgba(222, 12, 28, 0.22))
+      drop-shadow(0 0 18px rgba(212, 28, 139, 0.18));
+  }
+  62% {
+    filter:
+      brightness(1.18)
+      contrast(1.12)
+      drop-shadow(0 0 20px rgba(222, 12, 28, 0.30))
+      drop-shadow(0 0 24px rgba(212, 28, 139, 0.22));
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter:
+      brightness(1.15)
+      contrast(1.1)
+      drop-shadow(0 0 18px rgba(222, 12, 28, 0.28))
+      drop-shadow(0 0 22px rgba(212, 28, 139, 0.22));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing__logo {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    filter: brightness(1.15) contrast(1.1);
+  }
+}
+
+/* Logo spotlight */
+.landing__center::before {
+  content: "";
+  position: absolute;
+  width: min(520px, 92vw);
+  height: min(320px, 55vh);
+  border-radius: 999px;
+  background: radial-gradient(
+    closest-side,
+    rgba(0, 0, 0, 0.72),
+    rgba(0, 0, 0, 0.00)
+  );
+  transform: translateY(8px);
+  pointer-events: none;
+}
+
+.landing__logo {
+  cursor: pointer;
+}
+
+.landing__logo:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(237, 203, 19, 0.22);
+  border-radius: 12px;
+}
+
+/* =====================================================================
+   El 32 — Ambient Light Field (Organic + Clean)
+===================================================================== */
+
+:root {
+  --lf-crimson: rgba(222, 12, 28, 0.38);
+  --lf-violet: rgba(212, 28, 139, 0.32);
+  --lf-yellow: rgba(237, 203, 19, 0.22);
+  --lf-orange: rgba(209, 80, 0, 0.26);
+}
+
+.fx {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* =========================================================
+   Lightfield Layer
+========================================================= */
+.lightfield {
+  position: absolute;
+  inset: -30%;
+  z-index: 2;
+  pointer-events: none;
+
+  background:
+    radial-gradient(72vmax 54vmax at 12% 24%, var(--lf-violet),  transparent 60%),
+    radial-gradient(70vmax 52vmax at 88% 22%, var(--lf-crimson), transparent 58%),
+    radial-gradient(68vmax 52vmax at 22% 86%, var(--lf-orange),  transparent 60%),
+    radial-gradient(66vmax 50vmax at 78% 84%, var(--lf-yellow),  transparent 62%);
+  background-repeat: no-repeat;
+
+  mix-blend-mode: screen;
+  opacity: 0.94;
+
+  filter: url(#el32-liquid) blur(22px) saturate(1.15);
+
+  will-change: transform, opacity;
+  transform:
+    translate3d(var(--lf-x, 0px), var(--lf-y, 0px), 0)
+    rotate(var(--lf-r, 0deg))
+    scale(1.08);
+
+  animation: lf-breathe 8.5s ease-in-out infinite;
+
+  /* Performance: keep repaint/localization tighter */
+  contain: paint;
+  backface-visibility: hidden;
+}
+
+/* iOS Safari Performance Mode */
+@supports (-webkit-touch-callout: none) {
+  .lightfield {
+    filter: blur(16px) saturate(1.08);
+  }
+}
+
+@keyframes lf-breathe {
+  0%, 100% { opacity: 0.86; }
+  50%      { opacity: 0.98; }
+}
+
+/* Mobile tuning */
+@media (max-width: 520px) {
+  .lightfield {
+    filter: url(#el32-liquid) blur(20px) saturate(1.10);
+    animation-duration: 9.5s;
+    inset: -10%;
+
+    background:
+      radial-gradient(48vmin 38vmin at 14% 28%, var(--lf-violet), transparent 60%),
+      radial-gradient(46vmin 36vmin at 86% 24%, var(--lf-crimson), transparent 58%),
+      radial-gradient(44vmin 36vmin at 24% 84%, var(--lf-orange), transparent 60%),
+      radial-gradient(42vmin 34vmin at 78% 82%, var(--lf-yellow), transparent 62%);
+
+    transform:
+      translate3d(
+        clamp(-24px, var(--lf-x, 0px), 24px),
+        clamp(-18px, var(--lf-y, 0px), 18px),
+        0
+      )
+      rotate(var(--lf-r, 0deg))
+      scale(1.05);
+  }
+}
+
+/* Reduced motion: keep ambience but stop animation */
+@media (prefers-reduced-motion: reduce) {
+  .lightfield {
+    animation: none;
+    opacity: 0.90;
+    transform: none;
+    filter: blur(22px) saturate(1.10);
+  }
+}
+
+/* Inner pages: richer color presence on black */
+.page .lightfield {
+  opacity: 0.98;
+  filter: url(#el32-liquid) blur(24px) saturate(1.25);
+}
+
+@media (max-width: 520px) {
+  .page .lightfield {
+    filter: blur(18px) saturate(1.15);
+  }
+}
+
+/* =====================================================================
+   El 32 — Primary Menu (Phase 2, Refined)
+   Goals:
+   - Non-boxy, type-first navigation directly under the logo
+   - Unique open animation: “iris line reveal” + staggered links
+   - Mobile-first, wraps elegantly on small screens
+   Accessibility:
+   - aria-expanded sync
+   - Focus-visible styling
+   - Reduced motion support
+===================================================================== */
+
+.menu {
+  /* Tight under logo */
+  margin-top: 2px; /* <- pulls it close */
+  width: min(720px, 92vw);
+
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+/* =========================================================
+   Toggle (Minimal, No Box)
+   - Looks like a label + animated marker
+========================================================= */
+.menu__toggle {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+
+  padding: 6px 8px;
+  border-radius: 999px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  font: 650 12px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+
+  /* “Neon ink” glow without a box */
+  text-shadow:
+    0 0 12px rgba(212, 28, 139, 0.22),
+    0 0 18px rgba(222, 12, 28, 0.18);
+
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+
+.menu__toggle:hover { opacity: 0.95; }
+.menu__toggle:active { transform: scale(0.985); }
+
+.menu__toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(237, 203, 19, 0.22);
+}
+
+/* Little “signal” marker (animated) */
+.menu__toggle-icon {
+  width: 22px;
+  height: 10px;
+  position: relative;
+  display: inline-block;
+}
+
+.menu__toggle-icon span {
+  position: absolute;
+  inset: auto 0;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.70);
+  transform-origin: left center;
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease;
+}
+
+.menu__toggle-icon span:first-child { top: 1px; transform: scaleX(0.55); }
+.menu__toggle-icon span:last-child  { bottom: 1px; transform: scaleX(0.28); opacity: 0.85; }
+
+/* Open state: marker “extends” */
+.menu[data-open="true"] .menu__toggle-icon span:first-child { transform: scaleX(1); }
+.menu[data-open="true"] .menu__toggle-icon span:last-child  { transform: scaleX(0.72); opacity: 0.95; }
+
+/* =========================================================
+   Panel (Non-boxy)
+   - No card background
+   - Uses a thin “iris line” reveal under the toggle
+========================================================= */
+.menu__panel {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+
+  /* Closed state */
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+
+  transition:
+    max-height 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 240ms ease;
+}
+
+/* The “iris line” */
+.menu__panel::before {
+  content: "";
+  width: min(520px, 86vw);
+  height: 1px;
+  margin: 10px 0 12px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(222, 12, 28, 0.00),
+    rgba(212, 28, 139, 0.55),
+    rgba(237, 203, 19, 0.45),
+    rgba(222, 12, 28, 0.00)
+  );
+
+  transform: scaleX(0);
+  transform-origin: center;
+  opacity: 0.9;
+
+  transition: transform 560ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Open */
+.menu[data-open="true"] .menu__panel {
+  max-height: 240px; /* enough to wrap on mobile */
+  opacity: 1;
+}
+
+.menu[data-open="true"] .menu__panel::before {
+  transform: scaleX(1);
+}
+
+/* =========================================================
+   Links (Type-first, no boxes)
+   - Wraps on mobile, single row on wider screens
+========================================================= */
+.menu__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 18px;
+}
+
+.menu__item {
+  opacity: 0;
+  transform: translate3d(0, 8px, 0);
+  transition:
+    opacity 260ms ease,
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Stagger */
+.menu__item:nth-child(1) { transition-delay: 70ms; }
+.menu__item:nth-child(2) { transition-delay: 110ms; }
+.menu__item:nth-child(3) { transition-delay: 150ms; }
+.menu__item:nth-child(4) { transition-delay: 190ms; }
+.menu__item:nth-child(5) { transition-delay: 230ms; }
+.menu__item:nth-child(6) { transition-delay: 270ms; }
+
+.menu[data-open="true"] .menu__item {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.menu__link {
+  position: relative;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.90);
+
+  padding: 6px 2px;
+  border-radius: 10px;
+
+  font: 650 12px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+
+  transition: opacity 160ms ease;
+}
+
+/* Underline “ink sweep” */
+.menu__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 2px;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(222, 12, 28, 0.0),
+    rgba(222, 12, 28, 0.55),
+    rgba(212, 28, 139, 0.55),
+    rgba(237, 203, 19, 0.40),
+    rgba(222, 12, 28, 0.0)
+  );
+
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.menu__link:hover { opacity: 0.98; }
+.menu__link:hover::after { transform: scaleX(1); }
+
+.menu__link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(237, 203, 19, 0.22);
+}
+
+/* =========================================================
+   Reduced Motion
+========================================================= */
+@media (prefers-reduced-motion: reduce) {
+  .menu__panel,
+  .menu__panel::before,
+  .menu__item,
+  .menu__toggle-icon span,
+  .menu__link::after {
+    transition: none !important;
+  }
+}
+
+/* =====================================================================
+   El 32 — Tagline (Bilingual Toggle)
+   Goals:
+   - Subtle, centered, “party” personality without looking cheesy
+   - Tap/click toggles language
+   - Responsive sizing + clean focus styles
+===================================================================== */
+
+.tagline {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  /* Sits between logo and menu */
+  margin: 2px 0;
+
+  text-align: center;
+
+  /* Party-like accent font (with safe fallbacks) */
+  font-family: "Pacifico", ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: clamp(26px, 4.8vw, 42px);
+  line-height: 1.15;
+
+  color: rgba(255, 255, 255, 0.86);
+
+  /* Subtle neon ink */
+  text-shadow:
+    0 0 10px rgba(212, 28, 139, 0.18),
+    0 0 14px rgba(222, 12, 28, 0.14);
+
+  opacity: 0.92;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.tagline:hover {
+  opacity: 1;
+}
+
+.tagline:active {
+  transform: scale(0.992);
+}
+
+/* Keyboard accessibility */
+.tagline:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(237, 203, 19, 0.22);
+  border-radius: 999px;
+  padding: 2px 10px; /* gives the focus ring breathing room */
+}
+
+/* Slightly tighter on small screens */
+@media (max-width: 520px) {
+  .tagline {
+    margin-top: 8px;
+    margin-bottom: 4px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .tagline {
+    transition: none;
+  }
+}
+
+/* =====================================================================
+   El 32 — Inner Pages (About, Menu, Events, etc.)
+   Goals:
+   - Keep the same ambience as landing
+   - Minimal layout: logo-only header + clean content
+   - Mobile-first spacing + readable type
+===================================================================== */
+
+.page {
+  position: relative;
+  width: 100%;
+  min-height: 100svh; /* full screen minimum */
+  height: auto;       /* CRITICAL: allow page to extend for scrolling */
+
+  isolation: isolate;
+
+  /* Do NOT hide overflow on the scrolling container */
+  overflow-x: hidden;
+  overflow-y: visible;
+
+  background: #000;
+}
+
+/* Reuse landing overlay (readability layer) */
+.page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+
+  /* Subtle vignette to keep edges grounded */
+  background: radial-gradient(
+    80vmax 60vmax at 50% 40%,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.85)
+  );
+}
+
+.page__scroll{
+  position: relative;
+  z-index: 3;
+
+  height: 100svh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+
+  /* optional: avoids content hiding behind iOS bottom bar */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.page::before,
+.page::after,
+.page__veil,
+.page .lightfield{
+  position: fixed;
+  inset: -18%;
+  pointer-events: none;
+}
+
+/* Header: logo only */
+.page__header {
+  position: relative;
+  z-index: 3;
+
+  display: flex;
+  flex-direction: column;  /* stack logo + hint vertically */
+  align-items: center;     /* keep them centered */
+  justify-content: flex-start;
+
+  padding: 18px 18px 8px;
+  gap: 2px;                /* spacing between logo and hint */
+}
+
+/* Logo link: no visual box, but accessible */
+.page__logo-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  text-decoration: none;
+  line-height: 0; /* CRITICAL: removes inline SVG spacing */
+  border-radius: 999px;
+}
+
+.page__logo-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(237, 203, 19, 0.22);
+}
+
+/* Logo sizing: smaller than landing, still crisp */
+.page__logo {
+  width: min(220px, 56vw);
+  height: auto;
+
+  display: block; 
+
+  filter:
+    brightness(1.12)
+    contrast(1.06)
+    drop-shadow(0 0 14px rgba(222, 12, 28, 0.22))
+    drop-shadow(0 0 18px rgba(212, 28, 139, 0.18));
+}
+
+/* Logo navigation hint (subtle helper text) */
+.page__logo-hint {
+  margin-top:-6px;
+  margin: 0;
+
+  font: 500 11px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  color: rgba(255, 255, 255, 0.78); /* more visible */
+
+  text-shadow:
+    0 0 10px rgba(212, 28, 139, 0.12),
+    0 0 14px rgba(222, 12, 28, 0.10);
+
+  opacity: 0.85;
+}
+
+@media (max-width: 520px) {
+  .page__logo-hint {
+    margin-top:-5px;
+    font-size: 11px;
+    letter-spacing: 0.20em;
+  }
+}
+
+/* Content block */
+.page__content {
+  position: relative;
+  z-index: 3;
+
+  width: min(760px, 92vw);
+  margin: 0 auto;
+  padding: 18px 18px 28px;
+
+  text-align: center;
+}
+
+/* Title: matches your “type-first” vibe */
+.page__title {
+  margin: 10px 0 14px;
+
+  font: 650 14px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+
+  color: rgba(255, 255, 255, 0.92);
+
+  text-shadow:
+    0 0 12px rgba(212, 28, 139, 0.18),
+    0 0 18px rgba(222, 12, 28, 0.14);
+}
+
+/* Hours list (semantic DL, styled like a clean table) */
+.hours {
+  margin: 0;
+  padding: 0;
+
+  display: grid;
+  gap: 10px;
+
+  color: rgba(255, 255, 255, 0.90);
+}
+
+.hours__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+
+  padding: 10px 14px;
+
+  /* “non-boxy” but readable: faint glass line */
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.hours__row:first-child {
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.hours__day {
+  margin: 0;
+
+  font: 600 14px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.06em;
+  text-align: left;
+}
+
+.hours__time {
+  margin: 0;
+
+  font: 600 14px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.06em;
+
+  opacity: 0.92;
+}
+
+/* Mobile: keep it tight */
+@media (max-width: 520px) {
+  .page__header {
+    padding-top: 16px;
+  }
+
+  .hours__row {
+    padding: 10px 12px;
+  }
+
+  .hours__day,
+  .hours__time {
+    font-size: 13px;
+  }
+}
+
+/* Reduced motion: nothing special needed, but keep it safe */
+@media (prefers-reduced-motion: reduce) {
+  .page__logo {
+    filter: brightness(1.12) contrast(1.06);
+  }
+}
+
+/* =========================================================
+   Inner Pages — Black Base With Color Bed
+   - Static color bed + vignette
+   - Lightfield still provides motion on top
+========================================================= */
+.page {
+  background:
+    radial-gradient(70vmax 50vmax at 18% 28%, rgba(212, 28, 139, 0.16), transparent 60%),
+    radial-gradient(72vmax 52vmax at 84% 26%, rgba(222, 12, 28, 0.14), transparent 58%),
+    radial-gradient(66vmax 48vmax at 24% 88%, rgba(209, 80, 0, 0.10), transparent 62%),
+    radial-gradient(62vmax 46vmax at 78% 86%, rgba(237, 203, 19, 0.08), transparent 64%),
+    #000;
+}
+
+/* Grain overlay (subtle polish) */
+.page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2; /* above base + vignette, below content */
+  pointer-events: none;
+
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      rgba(0, 0, 0, 0.00) 2px,
+      rgba(0, 0, 0, 0.00) 4px
+    );
+}
+
+/* =====================================================================
+   Inner Pages — Animated Color Veil (Performance-Safe)
+   Goals:
+   - Noticeable movement behind content
+   - GPU-friendly (transform-only animation)
+   - Mobile-safe tuning + reduced motion support
+===================================================================== */
+
+.page__veil {
+  position: absolute;
+  inset: -18%;
+  z-index: 0;              /* sits above base background, below overlay/lightfield */
+  pointer-events: none;
+
+  /* Soft color clouds (static gradients) */
+  background:
+    radial-gradient(60vmax 46vmax at 20% 30%, rgba(212, 28, 139, 0.22), transparent 62%),
+    radial-gradient(62vmax 48vmax at 85% 28%, rgba(222, 12, 28, 0.20), transparent 60%),
+    radial-gradient(56vmax 44vmax at 28% 88%, rgba(209, 80, 0, 0.14), transparent 64%),
+    radial-gradient(52vmax 42vmax at 78% 84%, rgba(237, 203, 19, 0.12), transparent 66%);
+  background-repeat: no-repeat;
+
+  /* Make it feel “club” but not harsh */
+  mix-blend-mode: screen;
+  opacity: 0.55;
+
+  /* IMPORTANT: keep it cheap (avoid heavy filters) */
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0) rotate(0deg) scale(1.06);
+
+  animation: el32-veil-drift 14s ease-in-out infinite;
+  contain: paint;
+}
+
+@keyframes el32-veil-drift {
+  0% {
+    transform: translate3d(-18px, 10px, 0) rotate(-1.2deg) scale(1.06);
+    opacity: 0.50;
+  }
+  50% {
+    transform: translate3d(22px, -14px, 0) rotate(1.4deg) scale(1.09);
+    opacity: 0.62;
+  }
+  100% {
+    transform: translate3d(-18px, 10px, 0) rotate(-1.2deg) scale(1.06);
+    opacity: 0.50;
+  }
+}
+
+/* Mobile: still noticeable, but calmer (battery + smoothness) */
+@media (max-width: 520px) {
+  .page__veil {
+    inset: -12%;
+    opacity: 0.52;
+    animation-duration: 18s;
+  }
+}
+
+/* Reduced motion: keep the look, remove movement */
+@media (prefers-reduced-motion: reduce) {
+  .page__veil {
+    animation: none;
+    opacity: 0.55;
+    transform: none;
+  }
+}
+
+
+/* =====================================================================
+   Inner Pages — Clean Load-In Reveals (Hours)
+   Goals:
+   - Crisp, minimal motion
+   - GPU-friendly (opacity + transform)
+   - Staggered rows for polish
+   - Respects prefers-reduced-motion
+===================================================================== */
+
+[data-reveal],
+[data-reveal-item] {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+  will-change: opacity, transform;
+}
+
+[data-reveal].is-in,
+[data-reveal-item].is-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 520ms ease,
+    transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Rows: slightly tighter + faster than headline */
+.hours [data-reveal-item].is-in {
+  transition-duration: 420ms, 640ms;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  [data-reveal-item] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+
+/* =====================================================================
+   El 32 — Menu Page Cards
+   Goals:
+   - Clean, non-boxy layout
+   - Image slots reserved (no layout shift later)
+   - Responsive grid for mobile + desktop
+===================================================================== */
+
+.menu-grid {
+  display: grid;
+  gap: 14px;
+}
+
+/* Card: subtle structure without “boxy” */
+.menu-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+
+  padding: 12px 12px 14px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.menu-card:first-child {
+  border-top-color: rgba(255, 255, 255, 0.16);
+}
+
+/* Media slot: keeps space for images, optimized for performance */
+.menu-card__media {
+  width: 100%;
+  border-radius: 18px;
+
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.menu-card__media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+/* Placeholder “photo” slot (swap later for img) */
+.menu-card__img-slot {
+  aspect-ratio: 16 / 10;
+  width: 100%;
+
+  display: grid;
+  place-items: center;
+
+  color: rgba(255, 255, 255, 0.55);
+  font: 650 12px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+
+  /* Soft neon tint */
+  background:
+    radial-gradient(70% 120% at 20% 20%, rgba(212, 28, 139, 0.16), transparent 60%),
+    radial-gradient(80% 120% at 80% 10%, rgba(222, 12, 28, 0.14), transparent 62%),
+    radial-gradient(90% 140% at 50% 100%, rgba(237, 203, 19, 0.10), transparent 64%),
+    rgba(0, 0, 0, 0.35);
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+/* Text */
+.menu-card__name {
+  margin: 0 0 6px;
+
+  font: 700 16px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.04em;
+
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow:
+    0 0 12px rgba(212, 28, 139, 0.14),
+    0 0 16px rgba(222, 12, 28, 0.12);
+}
+
+.menu-card__desc {
+  margin: 0;
+
+  font: 520 14px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* Desktop/tablet: two-column layout inside each card */
+@media (min-width: 820px) {
+  .menu-grid {
+    gap: 18px;
+  }
+
+  .menu-card {
+    grid-template-columns: minmax(320px, 40%) 1fr;
+    align-items: center;
+
+    padding: 14px 10px 18px;
+    gap: 16px;
+  }
+
+  .menu-card__img-slot {
+    aspect-ratio: 16 / 9;
+  }
+
+  .menu-card__name {
+    font-size: 18px;
+  }
+
+  .menu-card__desc {
+    font-size: 15px;
+  }
+}
+
+/* =====================================================================
+   El 32 — Events Page Cards
+   Goals:
+   - Same “non-boxy” structure as Menu cards
+   - Image slot + clean type
+   - Mobile-first, responsive for desktop
+===================================================================== */
+
+.events-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.event-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+
+  padding: 12px 12px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.event-card:first-child {
+  border-top-color: rgba(255, 255, 255, 0.16);
+}
+
+.event-card__media {
+  width: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.event-card__media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+/* Text */
+.event-card__title {
+  margin: 0 0 6px;
+
+  font: 700 16px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.04em;
+
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow:
+    0 0 12px rgba(212, 28, 139, 0.14),
+    0 0 16px rgba(222, 12, 28, 0.12);
+}
+
+.event-card__desc {
+  margin: 0;
+
+  font: 520 14px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* Desktop/tablet: two-column layout like Menu */
+@media (min-width: 820px) {
+  .events-grid {
+    gap: 18px;
+  }
+
+  .event-card {
+    grid-template-columns: minmax(320px, 40%) 1fr;
+    align-items: center;
+
+    padding: 14px 10px 18px;
+    gap: 16px;
+  }
+
+  .event-card__title {
+    font-size: 18px;
+  }
+
+  .event-card__desc {
+    font-size: 15px;
+  }
+}
+
+/* =====================================================================
+   El 32 — Events: Coming Soon State
+   - Hides live content without removing it
+   - Bold, centered announcement
+===================================================================== */
+
+.events-coming-soon {
+  min-height: calc(100svh - 140px); /* accounts for header */
+  display: grid;
+  place-items: center;
+
+  text-align: center;
+
+  font: 800 clamp(28px, 7vw, 64px) / 1.1
+    system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  color: rgba(255, 255, 255, 0.95);
+
+  text-shadow:
+    0 0 18px rgba(212, 28, 139, 0.35),
+    0 0 26px rgba(222, 12, 28, 0.28);
+
+  user-select: none;
+  pointer-events: none;
+}
+
+/* =====================================================================
+   El 32 — Party Gallery
+   Goals:
+   - Simple photo grid (tiles only)
+   - Mobile: 2 columns
+   - Desktop: wide grid that fills space nicely
+===================================================================== */
+
+/* Optional: wider content container for gallery pages */
+.page__content--wide {
+  width: min(1200px, 94vw);
+}
+
+/* Grid */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* mobile: 2 wide */
+  gap: 10px;
+}
+
+/* Tile */
+.gallery-tile {
+  margin: 0;
+  border-radius: 16px;
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.gallery-tile img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  aspect-ratio: 1 / 1; /* uniform grid tiles */
+}
+
+/* Desktop: stretch wider + more columns */
+@media (min-width: 820px) {
+  .gallery-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .gallery-tile {
+    border-radius: 18px;
+  }
+}
+
+/* Very wide screens: fill nicely */
+@media (min-width: 1200px) {
+  .gallery-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+
+/* =====================================================================
+   El 32 — Lightbox Gallery (Fast, Mobile-first, No Crunched Arrows)
+===================================================================== */
+
+.gallery-btn {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  display: block;
+  background: transparent;
+  cursor: pointer;
+}
+
+.gallery-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(237, 203, 19, 0.22);
+  border-radius: 16px;
+}
+
+.lightbox[hidden] { display: none; }
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+/* Backdrop */
+.lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(8px);
+  z-index: 0;
+}
+
+/* UI overlay (no grid — prevents arrow crunching) */
+.lightbox__ui {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none; /* re-enabled on controls */
+}
+
+/* Image stage */
+.lightbox__stage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+  touch-action: pan-y;
+}
+
+/* Image */
+.lightbox__img {
+  max-width: 96vw;
+  max-height: 88svh;
+  width: auto;
+  height: auto;
+  display: block;
+  border-radius: 18px;
+
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 220ms ease;
+}
+
+.lightbox__img.is-dragging {
+  transition: none;
+}
+
+/* Controls */
+.lightbox__nav,
+.lightbox__close {
+  pointer-events: auto;
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+
+  display: grid;
+  place-items: center;
+
+  font: 700 22px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  z-index: 2;
+}
+
+.lightbox__nav:hover,
+.lightbox__close:hover {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+/* Left / Right arrows — always visible, never crunched */
+.lightbox__nav--prev {
+  position: absolute;
+  left: max(14px, env(safe-area-inset-left));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.lightbox__nav--next {
+  position: absolute;
+  right: max(14px, env(safe-area-inset-right));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Close button */
+.lightbox__close {
+  position: absolute;
+  top: max(14px, env(safe-area-inset-top));
+  right: max(14px, env(safe-area-inset-right));
+  font-size: 26px;
+  width: 46px;
+  height: 46px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Mobile tuning */
+@media (max-width: 520px) {
+  .lightbox__img {
+    max-height: 86svh;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .lightbox__img {
+    transition: none !important;
+  }
+}

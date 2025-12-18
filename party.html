@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- =========================================================
+         El 32 — Party Page (Gallery)
+         Purpose:
+         - Photo grid gallery (easy to update)
+         - Consistent inner page layout + ambience
+         - Mobile: 2 columns, Desktop: wide grid
+    ========================================================== -->
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Party — El 32</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+
+    <!-- Accent font used on landing; kept for consistency -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <main class="page page--party" aria-label="El 32 party gallery">
+      <!-- Fixed ambience layers -->
+      <div class="page__veil" aria-hidden="true"></div>
+
+      <svg class="fx" width="0" height="0" aria-hidden="true" focusable="false">
+        <filter id="el32-liquid">
+          <feTurbulence
+            id="el32-turbulence"
+            type="fractalNoise"
+            baseFrequency="0.012 0.018"
+            numOctaves="2"
+            seed="2"
+            stitchTiles="stitch"
+            result="noise"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="28"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </svg>
+
+      <div class="lightfield" aria-hidden="true"></div>
+
+      <!-- Scrollable content only -->
+      <div class="page__scroll">
+        <header class="page__header" role="banner">
+          <a
+            class="page__logo-link"
+            href="index.html"
+            aria-label="Back to home"
+          >
+            <img
+              class="page__logo"
+              src="assets/images/el32-logo.svg"
+              alt="El 32"
+              decoding="async"
+            />
+          </a>
+
+          <p class="page__logo-hint" aria-hidden="true">
+            Tap logo to return home
+          </p>
+        </header>
+
+        <section
+          class="page__content page__content--wide"
+          aria-label="Experience El 32"
+        >
+          <h1 class="page__title" data-reveal>Experience El 32</h1>
+
+          <div class="gallery-grid" data-reveal-group>
+            <!-- =====================================================
+                 GALLERY TILE TEMPLATE (CLICK TO EXPAND)
+                 - Duplicate a <figure> to add more photos
+                 - Swap src + data-full to your image
+                 - If you only keep one size, set both to the same file
+            ====================================================== -->
+
+            <figure class="gallery-tile" data-reveal-item>
+              <button class="gallery-btn" type="button">
+                <img
+                  src="assets/images/party-01.jpg"
+                  data-full="assets/images/party-01.jpg"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  width="1600"
+                  height="1000"
+                />
+              </button>
+            </figure>
+
+            <figure class="gallery-tile" data-reveal-item>
+              <button class="gallery-btn" type="button">
+                <img
+                  src="assets/images/party-02.jpg"
+                  data-full="assets/images/party-02.jpg"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  width="1600"
+                  height="1000"
+                />
+              </button>
+            </figure>
+
+            <figure class="gallery-tile" data-reveal-item>
+              <button class="gallery-btn" type="button">
+                <img
+                  src="assets/images/party-03.jpg"
+                  data-full="assets/images/party-03.jpg"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  width="1600"
+                  height="1000"
+                />
+              </button>
+            </figure>
+
+            <figure class="gallery-tile" data-reveal-item>
+              <button class="gallery-btn" type="button">
+                <img
+                  src="assets/images/party-04.jpg"
+                  data-full="assets/images/party-04.jpg"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  width="1600"
+                  height="1000"
+                />
+              </button>
+            </figure>
+
+            <figure class="gallery-tile" data-reveal-item>
+              <button class="gallery-btn" type="button">
+                <img
+                  src="assets/images/party-05.jpg"
+                  data-full="assets/images/party-05.jpg"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  width="1600"
+                  height="1000"
+                />
+              </button>
+            </figure>
+
+            <figure class="gallery-tile" data-reveal-item>
+              <button class="gallery-btn" type="button">
+                <img
+                  src="assets/images/party-06.jpg"
+                  data-full="assets/images/party-06.jpg"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  width="1600"
+                  height="1000"
+                />
+              </button>
+            </figure>
+          </div>
+        </section>
+      </div>
+
+      <!-- =========================================================
+           LIGHTBOX (Fullscreen Gallery)
+           - Single overlay reused for all photos
+           - Swipe (mobile), arrows + keyboard (desktop)
+      ========================================================== -->
+      <div class="lightbox" data-lightbox hidden aria-hidden="true">
+        <div class="lightbox__backdrop" data-lb-close></div>
+
+        <div
+          class="lightbox__ui"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Photo gallery"
+        >
+          <button
+            class="lightbox__close"
+            type="button"
+            data-lb-close
+            aria-label="Close"
+          >
+            ×
+          </button>
+
+          <button
+            class="lightbox__nav lightbox__nav--prev"
+            type="button"
+            data-lb-prev
+            aria-label="Previous photo"
+          >
+            ‹
+          </button>
+
+          <div class="lightbox__stage" data-lb-stage>
+            <img class="lightbox__img" data-lb-img alt="" />
+          </div>
+
+          <button
+            class="lightbox__nav lightbox__nav--next"
+            type="button"
+            data-lb-next
+            aria-label="Next photo"
+          >
+            ›
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>
