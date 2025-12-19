@@ -348,8 +348,9 @@
 
 /* =====================================================================
    Inner Pages — Simple Load-In Reveal (Performance Safe)
-   - Reveals elements once on page load
-   - Uses lightweight class toggles + rAF timing
+   - Reveals ALL [data-reveal] elements (not just the first)
+   - Staggers [data-reveal-item] rows for polish
+   - Respects prefers-reduced-motion
 ===================================================================== */
 (() => {
   "use strict";
@@ -359,25 +360,36 @@
 
   if (prefersReducedMotion) return;
 
-  const headline = document.querySelector("[data-reveal]");
+  const headlines = Array.from(document.querySelectorAll("[data-reveal]"));
   const items = Array.from(document.querySelectorAll("[data-reveal-item]"));
 
-  if (!headline && items.length === 0) return;
+  if (headlines.length === 0 && items.length === 0) return;
 
   // Start: next paint, then animate in (prevents “no-transition” first frame)
   requestAnimationFrame(() => {
-    headline?.classList.add("is-in");
+    headlines.forEach((el, i) => {
+      // Tiny stagger so multiple headings feel intentional
+      const delay = i * 80;
+      window.setTimeout(() => el.classList.add("is-in"), delay);
+    });
 
     // Stagger rows (tiny and cheap)
     items.forEach((el, i) => {
-      const delay = 90 + i * 90;
+      const delay = 120 + i * 90;
       window.setTimeout(() => el.classList.add("is-in"), delay);
     });
   });
 })();
 
 /* =====================================================================
-   El 32 — Party Gallery Lightbox (Swipe + Keys, Performance-safe)
+   El 32 — Party Gallery Lightbox (Swipe + Keys, Stable)
+   Structure:
+   - Defensive DOM lookups
+   - Open/close + focus restore
+   - Prev/next + preload neighbors
+   - Swipe: velocity + distance thresholds (your “second swipe” behavior)
+   Notes:
+   - Everything stays inside ONE IIFE to avoid ReferenceErrors
 ===================================================================== */
 (() => {
   "use strict";
@@ -391,20 +403,22 @@
   const btnPrev = lb.querySelector("[data-lb-prev]");
   const btnNext = lb.querySelector("[data-lb-next]");
   const closeBtns = Array.from(lb.querySelectorAll("[data-lb-close]"));
+  if (!imgEl || !stage) return;
 
   const scroller = document.querySelector(".page__scroll"); // inner-page scroll container
 
   let index = 0;
-  let lastActive = null;
   let isOpen = false;
+  let lastActive = null;
 
-  // Swipe state
-  let pointerDown = false;
-  let startX = 0;
-  let deltaX = 0;
+  // --- helpers ---------------------------------------------------------
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
   const getFullSrc = (i) =>
-    tiles[i]?.getAttribute("data-full") || tiles[i]?.getAttribute("src") || "";
+    tiles[(i + tiles.length) % tiles.length]?.getAttribute("data-full") ||
+    tiles[(i + tiles.length) % tiles.length]?.getAttribute("src") ||
+    "";
 
   const preload = (src) => {
     if (!src) return;
@@ -416,14 +430,20 @@
   const setIndex = (nextIndex) => {
     index = (nextIndex + tiles.length) % tiles.length;
     const src = getFullSrc(index);
+    if (!src) return;
 
-    // Simple, fast swap
+    // Swap image
     imgEl.src = src;
 
-    // Preload neighbors (cheap, helps swiping feel instant)
+    // Preload neighbors (cheap; improves swipe feel)
     preload(getFullSrc(index - 1));
     preload(getFullSrc(index + 1));
   };
+
+  const prev = () => setIndex(index - 1);
+  const next = () => setIndex(index + 1);
+
+  // --- open/close ------------------------------------------------------
 
   const open = (i, triggerEl) => {
     if (isOpen) return;
@@ -434,8 +454,13 @@
     lb.hidden = false;
     lb.setAttribute("aria-hidden", "false");
 
-    // Lock only the content scroller (keeps your ambience stable)
+    // Lock only the inner scroller (keeps ambience stable)
     if (scroller) scroller.style.overflow = "hidden";
+
+    // Ensure clean visual state
+    imgEl.classList.remove("is-dragging");
+    imgEl.style.transform = "";
+    imgEl.style.opacity = "";
 
     setIndex(i);
 
@@ -453,13 +478,16 @@
 
     if (scroller) scroller.style.overflow = "";
 
+    // Reset any swipe visuals
+    imgEl.classList.remove("is-dragging");
+    imgEl.style.transform = "";
+    imgEl.style.opacity = "";
+
     lastActive?.focus?.({ preventScroll: true });
   };
 
-  const prev = () => setIndex(index - 1);
-  const next = () => setIndex(index + 1);
+  // --- click wiring ----------------------------------------------------
 
-  // Open on click
   document.addEventListener("click", (e) => {
     const btn = e.target.closest?.(".gallery-btn");
     if (!btn) return;
@@ -469,12 +497,12 @@
     if (i >= 0) open(i, btn);
   });
 
-  // Close controls
   closeBtns.forEach((b) => b.addEventListener("click", close));
   btnPrev?.addEventListener("click", prev);
   btnNext?.addEventListener("click", next);
 
-  // Keyboard
+  // --- keyboard --------------------------------------------------------
+
   document.addEventListener("keydown", (e) => {
     if (!isOpen) return;
     if (e.key === "Escape") close();
@@ -482,48 +510,14 @@
     if (e.key === "ArrowRight") next();
   });
 
-  // Swipe (Pointer events: works on iOS + desktop trackpads)
-  stage.addEventListener("pointerdown", (e) => {
-    pointerDown = true;
-    startX = e.clientX;
-    deltaX = 0;
-    stage.setPointerCapture?.(e.pointerId);
-  });
+  // --- swipe (your “second swipe” behavior) ----------------------------
 
-  stage.addEventListener("pointermove", (e) => {
-    if (!pointerDown) return;
-    deltaX = e.clientX - startX;
-
-    // Small, cheap transform while dragging
-    imgEl.style.transform = `translate3d(${deltaX}px, 0, 0) scale(1)`;
-  });
-
-  const endSwipe = () => {
-    if (!pointerDown) return;
-    pointerDown = false;
-
-    const threshold = Math.min(110, window.innerWidth * 0.18);
-
-    // Reset transform quickly
-    imgEl.style.transform = "";
-
-    if (deltaX > threshold) prev();
-    else if (deltaX < -threshold) next();
-  };
-
-  stage.addEventListener("pointerup", endSwipe);
-  stage.addEventListener("pointercancel", endSwipe);
-})();
-
-  // --- Swipe (clean, smooth, GPU-only) ---
   let pointerDown = false;
   let startX = 0;
   let deltaX = 0;
   let startT = 0;
   let activePointerId = null;
   let isAnimating = false;
-
-  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
   const setDragVisual = (dx) => {
     const w = Math.max(320, window.innerWidth);
@@ -543,19 +537,19 @@
     if (isAnimating) return;
     isAnimating = true;
 
+    // Ensure transitions apply (your CSS uses transition unless .is-dragging)
     imgEl.classList.remove("is-dragging");
 
-    // Ensure transition applies (especially after dragging)
     requestAnimationFrame(() => {
       imgEl.style.transform = `translate3d(${dx}px, 0, 0)`;
       imgEl.style.opacity = `${opacity}`;
 
       const done = () => {
-        imgEl.removeEventListener("transitionend", done);
         isAnimating = false;
         cb?.();
       };
 
+      // Use once to avoid leaks
       imgEl.addEventListener("transitionend", done, { once: true });
     });
   };
@@ -589,11 +583,12 @@
     const elapsed = Math.max(1, performance.now() - startT);
     const velocity = deltaX / elapsed; // px per ms
 
-    // Tuned thresholds: feels responsive but not jumpy
+    // Tuned thresholds: responsive but not jumpy
     const distanceOK = Math.abs(deltaX) > w * 0.18;
     const velocityOK = Math.abs(velocity) > 0.65;
 
-    const dir = deltaX < 0 ? 1 : -1; // 1 = next (swipe left), -1 = prev (swipe right)
+    // Determine direction: swipe left => next, swipe right => prev
+    const dir = deltaX < 0 ? 1 : -1;
 
     // If not enough swipe, snap back cleanly
     if (!(distanceOK || velocityOK)) {
@@ -604,19 +599,19 @@
     }
 
     // Slide current image out
-    const outX = dir * -w; // swipe left => out to left (-w); swipe right => out to right (+w)
+    const outX = dir === 1 ? -w : w;
 
     animateTo(outX, 0.9, () => {
-      // Swap image once it's off-screen
+      // Swap image once off-screen
       if (dir === 1) next();
       else prev();
 
-      // Place new image just off-screen on the other side (no transition)
+      // Place new image just off-screen opposite side (no transition)
       imgEl.classList.add("is-dragging");
-      imgEl.style.transform = `translate3d(${dir * w}px, 0, 0)`;
+      imgEl.style.transform = `translate3d(${dir === 1 ? w : -w}px, 0, 0)`;
       imgEl.style.opacity = "0.9";
 
-      // Animate it into place
+      // Animate into place
       requestAnimationFrame(() => {
         imgEl.classList.remove("is-dragging");
         resetVisual();
@@ -626,3 +621,41 @@
 
   stage.addEventListener("pointerup", finishSwipe);
   stage.addEventListener("pointercancel", finishSwipe);
+})();
+
+/* =====================================================================
+   About Lead — Translation Toggle (Matches tagline behavior)
+   Purpose:
+   - Tap/click toggles English ↔ Spanish statement
+   - Uses hidden span swap (same pattern as tagline)
+===================================================================== */
+
+(() => {
+  "use strict";
+
+  const btn = document.querySelector("[data-about-lead]");
+  if (!btn) return;
+
+  const en = btn.querySelector("[data-en]");
+  const es = btn.querySelector("[data-es]");
+  if (!en || !es) return;
+
+  const setLang = (lang) => {
+    const isSpanish = lang === "es";
+
+    btn.dataset.lang = lang;
+    btn.setAttribute("aria-pressed", isSpanish ? "true" : "false");
+
+    en.hidden = isSpanish;
+    es.hidden = !isSpanish;
+  };
+
+  // Default: English
+  setLang(btn.dataset.lang || "en");
+
+  btn.addEventListener("click", () => {
+    const next = btn.dataset.lang === "en" ? "es" : "en";
+    setLang(next);
+  });
+})();
+

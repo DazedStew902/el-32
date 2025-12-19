@@ -90,6 +90,115 @@
 
         <!-- CONTENT -->
         <section class="page__content" aria-label="Hours">
+          <!-- =========================================================
+             ABOUT INTRO (Location + Instagram)
+             - Sits between the logo hint and the Hours section
+             - Type-first, non-boxy, matches El 32 vibe
+             - Both icon row and address row link to navigation
+        ========================================================== -->
+          <section
+            class="page__content page__content--intro"
+            aria-label="About intro"
+          >
+            <!-- =========================================================
+            ABOUT LEAD (Bilingual Toggle)
+            - Tap/click to toggle English ↔ Spanish
+            ========================================================== -->
+            <button
+              class="about-intro__lead"
+              type="button"
+              data-about-lead
+              data-lang="en"
+              aria-pressed="false"
+              aria-label="Translate about statement"
+            >
+              <span data-en
+                >El 32 is a new Latino bar in downtown Lynchburg</span
+              >
+              <span data-es hidden
+                >El 32 es un nuevo bar latino en el centro de Lynchburg</span
+              >
+            </button>
+
+            <!-- Location (icon + address) -->
+            <div class="about-intro__row" data-reveal-item>
+              <a
+                class="about-intro__icon-link"
+                href="https://www.google.com/maps/search/?api=1&query=1118+Main+St,+Lynchburg,+VA+24504"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Open location in maps: 1118 Main St, Lynchburg, VA 24504"
+                title="Open in Maps"
+              >
+                <!-- Pin icon (inline SVG for crispness) -->
+                <svg
+                  class="about-intro__icon"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    d="M12 22s7-4.5 7-11a7 7 0 1 0-14 0c0 6.5 7 11 7 11Z"
+                  ></path>
+                  <path
+                    d="M12 11.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z"
+                  ></path>
+                </svg>
+              </a>
+
+              <a
+                class="about-intro__text-link"
+                href="https://www.google.com/maps/search/?api=1&query=1118+Main+St,+Lynchburg,+VA+24504"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Navigate to 1118 Main St, Lynchburg, VA 24504"
+              >
+                1118 Main St, Lynchburg, VA 24504
+              </a>
+            </div>
+
+            <!-- Instagram -->
+            <div class="about-intro__row" data-reveal-item>
+              <a
+                class="about-intro__icon-link"
+                href="https://www.instagram.com/el32.lyh/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Open Instagram: @el32.lyh"
+                title="Instagram"
+              >
+                <!-- Instagram icon (inline SVG) -->
+                <svg
+                  class="about-intro__icon"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    d="M7.5 2.75h9A4.75 4.75 0 0 1 21.25 7.5v9A4.75 4.75 0 0 1 16.5 21.25h-9A4.75 4.75 0 0 1 2.75 16.5v-9A4.75 4.75 0 0 1 7.5 2.75Z"
+                  ></path>
+                  <path
+                    d="M12 16.25A4.25 4.25 0 1 1 12 7.75a4.25 4.25 0 0 1 0 8.5Z"
+                  ></path>
+                  <path
+                    d="M17.25 6.9a1.05 1.05 0 1 1-2.1 0 1.05 1.05 0 0 1 2.1 0Z"
+                  ></path>
+                </svg>
+              </a>
+
+              <a
+                class="about-intro__text-link"
+                href="https://www.instagram.com/el32.lyh/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow us on Instagram: @el32.lyh"
+              >
+                Follow us on Instagram
+              </a>
+            </div>
+          </section>
+
+          <!-- CONTENT -->
           <h1 class="page__title" data-reveal>Hours</h1>
 
           <dl class="hours" aria-label="Establishment hours">
@@ -114,6 +223,14 @@
             </div>
           </dl>
         </section>
+        <!-- =========================================================
+     FOOTER (Global)
+========================================================== -->
+        <footer class="site-footer" role="contentinfo">
+          <p class="site-footer__text">
+            © 2025 El 32 Latino Bar | All Rights Reserved
+          </p>
+        </footer>
       </div>
     </main>
 

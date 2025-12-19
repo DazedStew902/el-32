@@ -12,23 +12,22 @@
          - Uses async decode + eager loading (hero above the fold)
     ========================================================== -->
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>El 32</title>
 
     <link rel="stylesheet" href="css/style.css" />
     <!-- =========================================================
      Fonts: Tagline accent (subtle party script)
     ========================================================== -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-  rel="stylesheet"
-/>
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
-/>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
   </head>
 
   <body class="is-landing">
@@ -100,28 +99,28 @@
         />
 
         <!-- =========================================================
-     TAGLINE (Bilingual Toggle)
-     - Tap/click to toggle Spanish ↔ English
-     - Kept subtle + centered under logo
-========================================================== -->
-<button
-  class="tagline"
-  type="button"
-  data-tagline
-  data-lang="es"
-  aria-pressed="false"
-  aria-label="Translate tagline"
->
-  <span data-es>Llevando la fiesta a Lynchburg</span>
-  <span data-en hidden>Bringing the party to Lynchburg</span>
-</button>
+         TAGLINE (Bilingual Toggle)
+        - Tap/click to toggle Spanish ↔ English
+        - Kept subtle + centered under logo
+        ========================================================== -->
+        <button
+          class="tagline"
+          type="button"
+          data-tagline
+          data-lang="es"
+          aria-pressed="false"
+          aria-label="Translate tagline"
+        >
+          <span data-es>Llevando la fiesta a Lynchburg</span>
+          <span data-en hidden>Bringing the party to Lynchburg</span>
+        </button>
 
         <!-- =========================================================
        PRIMARY MENU
        - Sits directly under logo
        - Button toggles an animated menu panel (mobile + desktop)
        - Accessible: aria-expanded, aria-controls, Escape to close
-  ========================================================== -->
+    ========================================================== -->
         <div class="menu" data-menu>
           <button
             class="menu__toggle"
@@ -145,7 +144,6 @@
           >
             <ul class="menu__list" role="list">
               <!-- File structure-based routes -->
-              </li>
               <li class="menu__item">
                 <a class="menu__link" href="about.html">About</a>
               </li>
@@ -165,7 +163,15 @@
           </nav>
         </div>
       </div>
+      <!-- =========================================================
+     FOOTER (Global)
+========================================================== -->
+      <footer class="site-footer" role="contentinfo">
+        <p class="site-footer__text">
+          © 2025 El 32 Latino Bar | All Rights Reserved
+        </p>
+      </footer>
     </main>
-    <script src="js/main.js"></script>
+    <script src="js/main.js" defer></script>
   </body>
 </html>

@@ -31,7 +31,7 @@ body {
 body.is-landing {
   overflow: hidden;
   position: fixed;
-  width: 100%
+  width: 100%;
 }
 
 body {
@@ -452,6 +452,99 @@ body {
 .menu[data-open="true"] .menu__toggle-icon span:last-child  { transform: scaleX(0.72); opacity: 0.95; }
 
 /* =========================================================
+   Inner Pages — PDF Link (Primary Callout)
+   - Large, attention-grabbing
+   - Uses the SAME multicolor underline sweep as menu links
+   - Type-first, not boxy
+========================================================= */
+.page__pdf-link {
+  position: relative;
+  display: inline-block;
+
+  margin-top: 14px;
+  padding: 6px 2px;
+
+  text-decoration: none;
+
+  /* ~2x size vs hint text */
+  font: 800 clamp(20px, 4vw, 28px) / 1.15
+    system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+
+  color: rgba(222, 12, 28, 0.96);
+
+  /* Neon ink glow */
+  text-shadow:
+    0 0 16px rgba(222, 12, 28, 0.55),
+    0 0 26px rgba(212, 28, 139, 0.40),
+    0 0 38px rgba(222, 12, 28, 0.30);
+
+  opacity: 0.98;
+
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.page__pdf-link:hover {
+  opacity: 1;
+}
+
+.page__pdf-link:active {
+  transform: scale(0.985);
+}
+
+/* =========================================================
+   Multicolor underline sweep (matches menu links exactly)
+========================================================= */
+.page__pdf-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -8px;
+
+  height: 3px;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(222, 12, 28, 0.0),
+    rgba(222, 12, 28, 0.55),
+    rgba(212, 28, 139, 0.55),
+    rgba(237, 203, 19, 0.40),
+    rgba(222, 12, 28, 0.0)
+  );
+
+  transform: scaleX(0);
+  transform-origin: center;
+
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.page__pdf-link:hover::after {
+  transform: scaleX(1);
+}
+
+/* Keyboard accessibility */
+.page__pdf-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(237, 203, 19, 0.22);
+  border-radius: 999px;
+}
+
+/* Mobile tuning */
+@media (max-width: 520px) {
+  .page__pdf-link {
+    margin-top: 18px;
+    letter-spacing: 0.20em;
+  }
+}
+
+
+/* =========================================================
    Panel (Non-boxy)
    - No card background
    - Uses a thin “iris line” reveal under the toggle
@@ -704,7 +797,12 @@ body {
   );
 }
 
-.page__scroll{
+/* =========================================================
+   SCROLL LAYER (Inner Pages)
+   - This is the layout “authority” for centering
+   - Uses a centered column so content never drifts off-center
+========================================================= */
+.page__scroll {
   position: relative;
   z-index: 3;
 
@@ -714,8 +812,18 @@ body {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 
-  /* optional: avoids content hiding behind iOS bottom bar */
+  /* Centering authority */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* Safe-area support (prevents subtle iOS offset) */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
   padding-bottom: env(safe-area-inset-bottom);
+
+  /* Modern browsers: prevents centering drift when scrollbars appear */
+  scrollbar-gutter: stable both-edges;
 }
 
 .page::before,
@@ -727,18 +835,22 @@ body {
   pointer-events: none;
 }
 
-/* Header: logo only */
+/* Header: centered column */
 .page__header {
   position: relative;
   z-index: 3;
 
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+
   display: flex;
-  flex-direction: column;  /* stack logo + hint vertically */
-  align-items: center;     /* keep them centered */
+  flex-direction: column;
+  align-items: center;
   justify-content: flex-start;
 
   padding: 18px 18px 8px;
-  gap: 2px;                /* spacing between logo and hint */
+  gap: 2px;
 }
 
 /* Logo link: no visual box, but accessible */
@@ -802,14 +914,16 @@ body {
   position: relative;
   z-index: 3;
 
-  width: min(760px, 92vw);
-  margin: 0 auto;
-  padding: 18px 18px 28px;
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
 
+  padding: 18px 18px 28px;
   text-align: center;
 }
 
-/* Title: matches your “type-first” vibe */
+
+/* Title: matches “type-first” vibe */
 .page__title {
   margin: 10px 0 14px;
 
@@ -823,6 +937,238 @@ body {
     0 0 12px rgba(212, 28, 139, 0.18),
     0 0 18px rgba(222, 12, 28, 0.14);
 }
+
+/* =====================================================================
+   El 32 — About Intro (Location + Instagram)
+   Goals:
+   - Non-boxy, type-first info block
+   - Clean icon + link rows
+   - Matches existing glow + spacing language
+===================================================================== */
+
+/* Slightly tighter than main content blocks */
+.page__content--intro {
+  padding-top: 6px;
+  padding-bottom: 10px;
+}
+
+/* =========================================================
+   About Intro — Lead Statement (Interactive + Styled)
+========================================================= */
+.about-intro__lead {
+  appearance: none;
+  border: 0;
+  background: transparent;
+
+  cursor: pointer;
+  user-select: none;
+  margin: 6px 0 20px;
+
+  font: 620 clamp(18px, 3.6vw, 22px) / 1.45
+    system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+  color: rgba(255, 255, 255, 0.96);
+  letter-spacing: 0.01em;
+  text-align: center;
+
+  cursor: pointer;
+  user-select: none;
+
+  text-shadow:
+    0 0 18px rgba(212, 28, 139, 0.16),
+    0 0 26px rgba(222, 12, 28, 0.14);
+
+  position: relative;
+  display: inline-block;
+}
+
+/* Soft underline glow */
+.about-intro__lead::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: -8px;
+  height: 2px;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(222, 12, 28, 0),
+    rgba(222, 12, 28, 0.45),
+    rgba(212, 28, 139, 0.45),
+    rgba(237, 203, 19, 0.35),
+    rgba(222, 12, 28, 0)
+  );
+
+  opacity: 0.85;
+}
+
+/* Subtle hover shimmer */
+.about-intro__lead:hover {
+  text-shadow:
+    0 0 22px rgba(212, 28, 139, 0.22),
+    0 0 32px rgba(222, 12, 28, 0.20);
+}
+
+/* =========================================================
+   About Intro — Row
+========================================================= */
+.page__content--intro .about-intro__row {
+  width: 100%;                 /* key: make dividers + layout full-width */
+  display: flex;
+  flex-direction: column;      /* icon on its own line, text below */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  gap: 6px;
+  margin: 0;                   /* prevent auto-centering quirks */
+  padding: 12px 18px 14px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+/* Slightly stronger first divider in the intro block */
+.page__content--intro .about-intro__row:first-of-type {
+  border-top-color: rgba(255, 255, 255, 0.14);
+}
+
+/* Divider under the last intro row (Instagram) */
+.page__content--intro .about-intro__row:last-of-type {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  padding-bottom: 16px;  /* gives the bottom divider breathing room */
+  margin-bottom: 8px;    /* separates it from the Hours title */
+}
+
+/* Icon link */
+.about-intro__icon-link {
+  display: inline-grid;
+  place-items: center;
+
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+
+  text-decoration: none;
+
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.10) inset;
+
+  transition: transform 160ms ease, background 160ms ease, opacity 160ms ease;
+}
+
+.about-intro__icon-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  opacity: 0.98;
+}
+
+.about-intro__icon-link:active {
+  transform: scale(0.985);
+}
+
+.about-intro__icon-link:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(237, 203, 19, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.14) inset;
+}
+
+/* SVG icon style */
+.about-intro__icon {
+  width: 18px;
+  height: 18px;
+
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.88);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  filter:
+    drop-shadow(0 0 10px rgba(212, 28, 139, 0.14))
+    drop-shadow(0 0 14px rgba(222, 12, 28, 0.10));
+}
+
+/* Text link */
+.about-intro__text-link {
+  text-decoration: none;
+
+  font: 650 12px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  color: rgba(255, 255, 255, 0.88);
+
+  transition: opacity 160ms ease;
+}
+
+.about-intro__text-link:hover {
+  opacity: 0.98;
+}
+
+/* Underline sweep to match your menu link vibe */
+.about-intro__text-link {
+  position: relative;
+  padding: 6px 2px;
+  border-radius: 10px;
+}
+
+.about-intro__text-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 2px;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(222, 12, 28, 0.0),
+    rgba(222, 12, 28, 0.45),
+    rgba(212, 28, 139, 0.45),
+    rgba(237, 203, 19, 0.34),
+    rgba(222, 12, 28, 0.0)
+  );
+
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.about-intro__text-link:hover::after {
+  transform: scaleX(1);
+}
+
+.about-intro__text-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(237, 203, 19, 0.22);
+}
+
+/* Mobile tuning */
+@media (max-width: 520px) {
+  .about-intro__lead {
+    font-size: 30px;
+  }
+
+  .page__content--intro .about-intro__row{
+    gap: 9px;
+  }
+
+  .about-intro__text-link {
+    letter-spacing: 0.16em;
+  }
+}
+
+/* Reduced motion safety */
+@media (prefers-reduced-motion: reduce) {
+  .about-intro__icon-link,
+  .about-intro__text-link::after {
+    transition: none !important;
+  }
+}
+
 
 /* Hours list (semantic DL, styled like a clean table) */
 .hours {
@@ -1636,4 +1982,178 @@ body {
   display: grid;
   place-items: center;
   margin-top: 6px;
+}
+
+/* =====================================================================
+   El 32 — Contact Links (Instagram / Email / Phone)
+   Goals:
+   - Non-boxy, type-first buttons
+   - Matches existing glow language + focus rings
+   - Mobile: stacked; Desktop: inline
+===================================================================== */
+
+.contact-links {
+  margin-top: 16px;
+
+  display: grid;
+  gap: 10px;
+
+  /* Center within your content container */
+  justify-items: center;
+  text-align: center;
+}
+
+/* Desktop: inline row */
+@media (min-width: 820px) {
+  .contact-links {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 14px;
+  }
+}
+
+.contact-links__btn {
+  width: 100%;
+  max-width: 560px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  padding: 12px 14px;
+  border-radius: 999px;
+
+  text-decoration: none;
+
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+
+  color: rgba(255, 255, 255, 0.92);
+
+  font: 700 12px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+
+  text-shadow:
+    0 0 12px rgba(212, 28, 139, 0.20),
+    0 0 18px rgba(222, 12, 28, 0.16);
+
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    box-shadow 180ms ease,
+    opacity 160ms ease;
+}
+
+.contact-links__btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  opacity: 0.98;
+}
+
+.contact-links__btn:active {
+  transform: scale(0.985);
+}
+
+.contact-links__btn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(237, 203, 19, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.14) inset;
+}
+
+/* Icon container matches your existing icon button feel */
+.contact-links__icon {
+  display: inline-grid;
+  place-items: center;
+
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+
+  background: rgba(0, 0, 0, 0.22);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.10) inset;
+}
+
+/* SVG icon style (shared) */
+.contact-icon {
+  width: 18px;
+  height: 18px;
+
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.88);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  filter:
+    drop-shadow(0 0 10px rgba(212, 28, 139, 0.14))
+    drop-shadow(0 0 14px rgba(222, 12, 28, 0.10));
+}
+
+/* Text: keep legible, avoid overflow */
+.contact-links__text {
+  display: inline-block;
+  max-width: 34ch;
+}
+
+/* Mobile: slightly larger tap target */
+@media (max-width: 520px) {
+  .contact-links__btn {
+    padding: 13px 14px;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .contact-links__btn {
+    transition: none !important;
+  }
+}
+
+/* =====================================================================
+   El 32 — Global Footer
+   Goals:
+   - Small, subtle copyright line
+   - Consistent with type-first aesthetic
+   - Never visually dominant
+===================================================================== */
+
+.site-footer {
+  position: relative;
+  z-index: 3;
+
+  padding: 14px 18px 18px;
+  text-align: center;
+
+  pointer-events: none; /* purely informational */
+}
+
+.site-footer__text {
+  margin: 0;
+
+  font: 500 10px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  color: rgba(255, 255, 255, 0.68);
+
+  text-shadow:
+    0 0 8px rgba(212, 28, 139, 0.08),
+    0 0 12px rgba(222, 12, 28, 0.06);
+}
+
+/* Mobile: slightly more breathing room */
+@media (max-width: 520px) {
+  .site-footer {
+    padding-bottom: 20px;
+  }
 }
