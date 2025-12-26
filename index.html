@@ -1,6 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BarOrPub",
+        "name": "El 32",
+        "url": "https://el-32.com/",
+        "image": "https://el-32.com/assets/images/landing-desktop.jpg",
+        "telephone": "+1-434-209-5900",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "1118 Main St",
+          "addressLocality": "Lynchburg",
+          "addressRegion": "VA",
+          "postalCode": "24504",
+          "addressCountry": "US"
+        },
+        "sameAs": ["https://www.instagram.com/el32.lyh/"],
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Wednesday",
+            "opens": "20:00",
+            "closes": "02:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Thursday",
+            "opens": "20:00",
+            "closes": "02:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Friday",
+            "opens": "20:00",
+            "closes": "02:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Saturday",
+            "opens": "20:00",
+            "closes": "02:00"
+          }
+        ]
+      }
+    </script>
     <!-- =========================================================
          El 32 — Minimal Landing (Phase 1)
          Purpose:
@@ -13,6 +58,93 @@
     ========================================================== -->
     <meta charset="UTF-8" />
     <title>El 32</title>
+
+    <meta
+      name="description"
+      content="El 32 is a Latino bar in downtown Lynchburg, VA — late-night drinks, music, and a vibe. Find hours, menu, events, photos, and contact info."
+    />
+    <link rel="canonical" href="https://el-32.com/" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="El 32" />
+    <meta
+      property="og:title"
+      content="El 32 | Latino Bar in Downtown Lynchburg, VA"
+    />
+    <meta
+      property="og:description"
+      content="Late-night drinks, music, and a Latino vibe in downtown Lynchburg. Hours, menu, events, photos, and contact."
+    />
+    <meta property="og:url" content="https://el-32.com/" />
+    <meta
+      property="og:image"
+      content="https://el-32.com/assets/images/landing-desktop.jpg"
+    />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="El 32 | Latino Bar in Downtown Lynchburg, VA"
+    />
+    <meta
+      name="twitter:description"
+      content="Hours, menu, events, photos, and contact info."
+    />
+    <meta
+      name="twitter:image"
+      content="https://el-32.com/assets/images/landing-desktop.jpg"
+    />
+
+    <!-- LocalBusiness / Bar structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BarOrPub",
+        "name": "El 32",
+        "url": "https://el-32.com/",
+        "image": "https://el-32.com/assets/images/landing-desktop.jpg",
+        "telephone": "+1-434-209-5900",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "1118 Main St",
+          "addressLocality": "Lynchburg",
+          "addressRegion": "VA",
+          "postalCode": "24504",
+          "addressCountry": "US"
+        },
+        "sameAs": ["https://www.instagram.com/el32.lyh/"],
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Wednesday",
+            "opens": "20:00",
+            "closes": "02:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Thursday",
+            "opens": "20:00",
+            "closes": "02:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Friday",
+            "opens": "20:00",
+            "closes": "02:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Saturday",
+            "opens": "20:00",
+            "closes": "02:00"
+          }
+        ]
+      }
+    </script>
 
     <link rel="stylesheet" href="css/style.css" />
     <!-- =========================================================
@@ -37,6 +169,12 @@
          - Recommended: WebP + JPG fallback
     ========================================================== -->
     <main class="landing" aria-label="El 32 landing">
+      <h1 class="sr-only">El 32 — Latino Bar in Downtown Lynchburg, VA</h1>
+      <p class="sr-only">
+        Visit El 32 at 1118 Main St in downtown Lynchburg, Virginia. Late-night
+        drinks, music, and a Latino vibe. Check hours, menu, events, party
+        photos, and contact info.
+      </p>
       <!-- =========================================================
      HERO: Full-screen background image (responsive)
      - Uses assets/images/ based on your folder structure
@@ -145,19 +283,19 @@
             <ul class="menu__list" role="list">
               <!-- File structure-based routes -->
               <li class="menu__item">
-                <a class="menu__link" href="about.html">About</a>
+                <a class="menu__link" href="about">About</a>
               </li>
               <li class="menu__item">
-                <a class="menu__link" href="menu.html">Menu</a>
+                <a class="menu__link" href="menu">Menu</a>
               </li>
               <li class="menu__item">
-                <a class="menu__link" href="events.html">Events</a>
+                <a class="menu__link" href="events">Events</a>
               </li>
               <li class="menu__item">
-                <a class="menu__link" href="party.html">Party</a>
+                <a class="menu__link" href="party">Party</a>
               </li>
               <li class="menu__item">
-                <a class="menu__link" href="contact.html">Contact</a>
+                <a class="menu__link" href="contact">Contact</a>
               </li>
             </ul>
           </nav>

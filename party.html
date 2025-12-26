@@ -1,6 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BarOrPub",
+        "name": "El 32",
+        "url": "https://el-32.com/",
+        "image": "https://el-32.com/assets/images/landing-desktop.jpg",
+        "telephone": "+1-434-209-5900",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "1118 Main St",
+          "addressLocality": "Lynchburg",
+          "addressRegion": "VA",
+          "postalCode": "24504",
+          "addressCountry": "US"
+        },
+        "sameAs": ["https://www.instagram.com/el32.lyh/"],
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Wednesday",
+            "opens": "20:00",
+            "closes": "02:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Thursday",
+            "opens": "20:00",
+            "closes": "02:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Friday",
+            "opens": "20:00",
+            "closes": "02:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Saturday",
+            "opens": "20:00",
+            "closes": "02:00"
+          }
+        ]
+      }
+    </script>
     <!-- =========================================================
          El 32 — Party Page (Gallery)
          Purpose:
@@ -24,6 +69,61 @@
       href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
       rel="stylesheet"
     />
+    <meta
+      name="description"
+      content="Explore photos from El 32 — a Latino bar in downtown Lynchburg, VA. See the vibe, the nights, and the party."
+    />
+    <link rel="canonical" href="https://el-32.com/party.html" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="theme-color" content="#000000" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="El 32" />
+    <meta property="og:title" content="Photos | El 32 Downtown Lynchburg, VA" />
+    <meta
+      property="og:description"
+      content="Photo gallery from El 32 — a Latino bar in downtown Lynchburg."
+    />
+    <meta property="og:url" content="https://el-32.com/party.html" />
+    <meta
+      property="og:image"
+      content="https://el-32.com/assets/images/party-01.jpg"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Photos | El 32 Downtown Lynchburg, VA"
+    />
+    <meta
+      name="twitter:description"
+      content="Explore the vibe at El 32 in downtown Lynchburg."
+    />
+    <meta
+      name="twitter:image"
+      content="https://el-32.com/assets/images/party-01.jpg"
+    />
+
+    <!-- LocalBusiness / Bar structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BarOrPub",
+        "name": "El 32",
+        "url": "https://el-32.com/",
+        "image": "https://el-32.com/assets/images/party-01.jpg",
+        "telephone": "+1-434-209-5900",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "1118 Main St",
+          "addressLocality": "Lynchburg",
+          "addressRegion": "VA",
+          "postalCode": "24504",
+          "addressCountry": "US"
+        },
+        "sameAs": ["https://www.instagram.com/el32.lyh/"]
+      }
+    </script>
   </head>
 
   <body>
@@ -57,11 +157,7 @@
       <!-- Scrollable content only -->
       <div class="page__scroll">
         <header class="page__header" role="banner">
-          <a
-            class="page__logo-link"
-            href="index.html"
-            aria-label="Back to home"
-          >
+          <a class="page__logo-link" href="index" aria-label="Back to home">
             <img
               class="page__logo"
               src="assets/images/el32-logo.svg"
