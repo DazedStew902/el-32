@@ -52,6 +52,61 @@ body {
   position: relative;
 }
 
+/* =========================================================
+   Global Scrollbar Suppression (Cross-Browser)
+   Goals:
+   - Hide all visible scrollbars (desktop + mobile)
+   - Preserve scrolling behavior and momentum
+   - Prevent stacked scrollbar artifacts (Safari especially)
+========================================================= */
+
+/* Firefox */
+html,
+body,
+.page,
+.page__scroll {
+  scrollbar-width: none;          /* hides scrollbar */
+  /* =========================================================
+     Single Scroll Authority
+     - Prevents body + inner container double scrollbars
+  ========================================================== */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  -webkit-overflow-scrolling: touch;
+
+  /* Safari: prevents phantom scrollbar painting */
+  overscroll-behavior: contain;
+}
+
+/* =========================================================
+   Landing Page — Hard Scrollbar Suppression
+   (Safari edge-case protection)
+========================================================= */
+body.is-landing {
+  overflow: hidden !important;
+}
+
+/* Prevent Safari from painting a phantom scrollbar */
+body.is-landing::-webkit-scrollbar {
+  display: none;
+}
+
+/* WebKit (Safari, Chrome, Edge) */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.page::-webkit-scrollbar,
+.page__scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Prevent scrollbar gutter reservation (Chrome/Edge) */
+html {
+  scrollbar-gutter: auto;
+}
+
 /* =========================
    2) Landing Layout + Layer Stack
    Explicit stacking order:
@@ -283,7 +338,9 @@ body {
 }
 
 /* =========================================================
-   Lightfield Layer
+   Lightfield Layer (Cheap-by-default)
+   - Default: blur + saturate only (cheap)
+   - Ultra: SVG displacement + screen blend (expensive)
 ========================================================= */
 .lightfield {
   position: absolute;
@@ -292,16 +349,21 @@ body {
   pointer-events: none;
 
   background:
-    radial-gradient(72vmax 54vmax at 12% 24%, var(--lf-violet),  transparent 60%),
+    radial-gradient(72vmax 54vmax at 12% 24%, var(--lf-violet), transparent 60%),
     radial-gradient(70vmax 52vmax at 88% 22%, var(--lf-crimson), transparent 58%),
-    radial-gradient(68vmax 52vmax at 22% 86%, var(--lf-orange),  transparent 60%),
-    radial-gradient(66vmax 50vmax at 78% 84%, var(--lf-yellow),  transparent 62%);
+    radial-gradient(68vmax 52vmax at 22% 86%, var(--lf-orange), transparent 60%),
+    radial-gradient(66vmax 50vmax at 78% 84%, var(--lf-yellow), transparent 62%);
   background-repeat: no-repeat;
 
-  mix-blend-mode: screen;
-  opacity: 0.94;
-
-  filter: url(#el32-liquid) blur(22px) saturate(1.15);
+  /* =========================================================
+     CHEAP DEFAULT:
+     - No SVG displacement
+     - No blend-mode
+     - Still looks like “club lights”
+  ========================================================== */
+  opacity: 0.80;
+  mix-blend-mode: normal;
+  filter: blur(18px) saturate(1.08);
 
   will-change: transform, opacity;
   transform:
@@ -311,16 +373,18 @@ body {
 
   animation: lf-breathe 8.5s ease-in-out infinite;
 
-  /* Performance: keep repaint/localization tighter */
   contain: paint;
   backface-visibility: hidden;
 }
 
-/* iOS Safari Performance Mode */
-@supports (-webkit-touch-callout: none) {
-  .lightfield {
-    filter: blur(16px) saturate(1.08);
-  }
+/* =========================================================
+   FX Quality: ULTRA (High-end only)
+   - Re-enable the expensive displacement + blend
+========================================================= */
+.fx-ultra .lightfield {
+  opacity: 0.94;
+  mix-blend-mode: screen;
+  filter: url(#el32-liquid) blur(22px) saturate(1.15);
 }
 
 @keyframes lf-breathe {
@@ -328,12 +392,14 @@ body {
   50%      { opacity: 0.98; }
 }
 
-/* Mobile tuning */
+/* Mobile tuning (always cheap) */
 @media (max-width: 520px) {
   .lightfield {
-    filter: url(#el32-liquid) blur(20px) saturate(1.10);
-    animation-duration: 9.5s;
     inset: -10%;
+    opacity: 0.76;
+    filter: blur(16px) saturate(1.06);
+    mix-blend-mode: normal;
+    animation-duration: 9.5s;
 
     background:
       radial-gradient(48vmin 38vmin at 14% 28%, var(--lf-violet), transparent 60%),
@@ -374,6 +440,23 @@ body {
   }
 }
 
+/* =========================================================
+   Safari Performance Mode — Menu Open
+   - Temporarily reduce heavy compositing while nav animates
+   - Keeps look consistent, massively improves Safari responsiveness
+========================================================= */
+.menu-open .lightfield {
+  animation: none; /* stop per-frame opacity + transform churn */
+  transform: translate3d(0, 0, 0) scale(1.04);
+
+  /* Drop the SVG filter (displacement) while menu is open */
+  filter: blur(14px) saturate(1.06);
+
+  /* Blend modes are expensive in Safari; reduce cost during nav */
+  mix-blend-mode: normal;
+  opacity: 0.65;
+}
+
 /* =====================================================================
    El 32 — Primary Menu (Phase 2, Refined)
    Goals:
@@ -394,11 +477,17 @@ body {
   display: grid;
   justify-items: center;
   gap: 10px;
+
+  position: relative;     /* REQUIRED */
+  isolation: isolate;     /* REQUIRED — contains glow layering */
+  z-index: 4;             /* Above landing overlay */
 }
 
 /* =========================================================
-   Toggle (Minimal, No Box)
-   - Looks like a label + animated marker
+   Toggle (Minimal, No Box) + Attention Pulse
+   - Adds a subtle “light bloom” behind the button to cue interaction
+   - Stops pulsing once the menu is opened
+   - Respects prefers-reduced-motion
 ========================================================= */
 .menu__toggle {
   appearance: none;
@@ -424,6 +513,149 @@ body {
     0 0 18px rgba(222, 12, 28, 0.18);
 
   transition: transform 160ms ease, opacity 160ms ease;
+  -webkit-tap-highlight-color: transparent;
+
+  position: relative; /* anchor for glow */
+  isolation: isolate; /* keep glow behind text */
+}
+
+/* Hover/press */
+.menu__toggle:hover { opacity: 0.95; }
+.menu__toggle:active { transform: scale(0.985); }
+
+/* Focus ring (keyboard only; you already have this pattern) */
+.menu__toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(237, 203, 19, 0.22);
+}
+
+/* =========================================================
+   Pulse Light (Behind Button)
+   - Uses a blurred radial “bloom” that pulses gently
+   - Disabled when menu is open
+========================================================= */
+/* =========================================================
+   Pulse Light (High-Impact Cue)
+   - Strong “club glow” behind Discover so it’s unmistakable
+   - Still premium: soft bloom + controlled pulse (no harsh edges)
+========================================================= */
+/* =========================================================
+   Discover Pulse — Color-Cycling High-Impact Glow
+   - Each pulse shifts hue (gold → magenta → red → gold)
+   - Strong enough to cut through vignette + overlays
+   - GPU-friendly (opacity + transform only)
+========================================================= */
+.menu__toggle::before {
+  content: "";
+  position: absolute;
+
+  /* Large halo so it reads immediately */
+  inset: -22px -36px;
+  border-radius: 999px;
+
+  /* Behind text, inside menu isolation */
+  z-index: -1;
+  pointer-events: none;
+
+  /* Base gradient (animated via filter + hue rotation) */
+  background:
+    radial-gradient(
+      closest-side,
+      rgba(237, 203, 19, 0.85),
+      rgba(212, 28, 139, 0.65),
+      rgba(222, 12, 28, 0.55),
+      rgba(0, 0, 0, 0.00) 78%
+    );
+
+  /* Strong bloom */
+  filter:
+    blur(18px)
+    saturate(1.35)
+    hue-rotate(0deg);
+
+  opacity: 0.75;
+  transform: scale(0.90);
+
+  animation: el32-discover-pulse-cycle 1450ms ease-in-out infinite;
+  will-change: transform, opacity, filter;
+}
+
+/* =========================================================
+   Pulse + Color Cycle
+   - Hue rotation gives clean color cycling
+   - No repaint-heavy blend modes
+========================================================= */
+@keyframes el32-discover-pulse-cycle {
+  0% {
+    opacity: 0.55;
+    transform: scale(0.88);
+    filter:
+      blur(16px)
+      saturate(1.2)
+      hue-rotate(0deg);        /* Gold */
+  }
+
+  33% {
+    opacity: 0.85;
+    transform: scale(1.02);
+    filter:
+      blur(18px)
+      saturate(1.35)
+      hue-rotate(120deg);     /* Magenta / Pink */
+  }
+
+  66% {
+    opacity: 1;
+    transform: scale(1.12);
+    filter:
+      blur(20px)
+      saturate(1.45)
+      hue-rotate(240deg);     /* Red / Crimson */
+  }
+
+  100% {
+    opacity: 0.55;
+    transform: scale(0.88);
+    filter:
+      blur(16px)
+      saturate(1.2)
+      hue-rotate(360deg);     /* Back to Gold */
+  }
+}
+
+/* =========================================================
+   Stop pulsing once menu is opened
+========================================================= */
+.menu[data-open="true"] .menu__toggle::before {
+  animation: none;
+  opacity: 0.45;
+  transform: scale(0.96);
+  filter:
+    blur(14px)
+    saturate(1.15)
+    hue-rotate(0deg);
+}
+
+/* Reduced motion: keep a static, colorful glow */
+@media (prefers-reduced-motion: reduce) {
+  .menu__toggle::before {
+    animation: none;
+    opacity: 0.60;
+    transform: scale(0.96);
+    filter:
+      blur(16px)
+      saturate(1.25)
+      hue-rotate(140deg);
+  }
+}
+
+/* Mobile: slightly more obvious cue */
+@media (max-width: 520px) {
+  .menu__toggle::before {
+    inset: -12px -18px;
+    filter: blur(11px);
+    opacity: 0.42;
+  }
 }
 
 .menu__toggle:hover { opacity: 0.95; }
@@ -458,6 +690,51 @@ body {
 /* Open state: marker “extends” */
 .menu[data-open="true"] .menu__toggle-icon span:first-child { transform: scaleX(1); }
 .menu[data-open="true"] .menu__toggle-icon span:last-child  { transform: scaleX(0.72); opacity: 0.95; }
+
+/* =========================================================
+   Safari Focus/Tap Highlight Fix
+   - Removes the random “box” highlight Safari can paint
+   - Preserves keyboard accessibility via :focus-visible
+========================================================= */
+
+/* Prevent iOS/Safari tap highlight rectangles */
+.menu__toggle,
+.tagline,
+.menu__link,
+.page__logo-link,
+.about-intro__lead,
+.gallery-btn,
+.lightbox__nav,
+.lightbox__close {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove default focus outlines everywhere (we provide our own) */
+.menu__toggle:focus,
+.tagline:focus,
+.menu__link:focus,
+.page__logo-link:focus,
+.about-intro__lead:focus,
+.gallery-btn:focus,
+.lightbox__nav:focus,
+.lightbox__close:focus {
+  outline: none;
+}
+
+/* Safari sometimes treats mouse/tap focus as focus-visible.
+   This forces the ring OFF unless it truly matches :focus-visible. */
+@supports selector(:focus-visible) {
+  .menu__toggle:focus:not(:focus-visible),
+  .tagline:focus:not(:focus-visible),
+  .menu__link:focus:not(:focus-visible),
+  .page__logo-link:focus:not(:focus-visible),
+  .about-intro__lead:focus:not(:focus-visible),
+  .gallery-btn:focus:not(:focus-visible),
+  .lightbox__nav:focus:not(:focus-visible),
+  .lightbox__close:focus:not(:focus-visible) {
+    box-shadow: none !important;
+  }
+}
 
 /* =========================================================
    Inner Pages — PDF Link (Primary Callout)
@@ -543,33 +820,50 @@ body {
   border-radius: 999px;
 }
 
-/* Mobile tuning */
+/* =========================================================
+   Mobile — Full Menu PDF Link (True Centering Fix)
+========================================================= */
 @media (max-width: 520px) {
   .page__pdf-link {
     margin-top: 18px;
+
+    /* Force true visual centering */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
     letter-spacing: 0.20em;
+
+    /* Prevent Safari text-offset quirks */
+    width: 100%;
+    max-width: 100%;
   }
 }
 
 
 /* =========================================================
-   Panel (Non-boxy)
-   - No card background
-   - Uses a thin “iris line” reveal under the toggle
+   Panel (Non-boxy) — GPU-friendly reveal
+   - Avoid max-height animation (layout-heavy in Safari)
+   - Use transform + opacity (composite-friendly)
 ========================================================= */
 .menu__panel {
   width: 100%;
   display: grid;
   justify-items: center;
 
-  /* Closed state */
-  max-height: 0;
+  /* Open/close animation: transform-only */
   opacity: 0;
-  overflow: hidden;
+  transform: translate3d(0, -6px, 0) scaleY(0.96);
+  transform-origin: top center;
+
+  /* Keep it visually clipped without animating layout */
+  overflow: clip;
 
   transition:
-    max-height 520ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 240ms ease;
+    opacity 200ms ease,
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
 }
 
 /* The “iris line” */
@@ -592,12 +886,13 @@ body {
   opacity: 0.9;
 
   transition: transform 560ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
 }
 
-/* Open */
+/* Open state */
 .menu[data-open="true"] .menu__panel {
-  max-height: 240px; /* enough to wrap on mobile */
   opacity: 1;
+  transform: translate3d(0, 0, 0) scaleY(1);
 }
 
 .menu[data-open="true"] .menu__panel::before {
@@ -891,29 +1186,72 @@ body {
     drop-shadow(0 0 18px rgba(212, 28, 139, 0.18));
 }
 
-/* Logo navigation hint (subtle helper text) */
+/* =========================================================
+   Logo Hint (Return Home Cue) — Guaranteed Visible Pulse
+   - Uses animated box-shadow (no pseudo-elements, no z-index issues)
+   - Subtle but clearly noticeable
+   - Works across Safari/Chrome/Firefox
+========================================================= */
 .page__logo-hint {
-  margin-top:-6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   margin: 0;
+
+  /* Give the glow a “pill” to live on */
+  padding: 6px 14px;
+  border-radius: 999px;
 
   font: 500 11px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  text-align: center;
 
-  color: rgba(255, 255, 255, 0.78); /* more visible */
+  color: rgba(255, 255, 255, 0.80);
+
+  /* Slight glass base so the glow reads on dark backgrounds */
+  background: rgba(0, 0, 0, 0.22);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.10) inset;
 
   text-shadow:
-    0 0 10px rgba(212, 28, 139, 0.12),
-    0 0 14px rgba(222, 12, 28, 0.10);
+    0 0 10px rgba(212, 28, 139, 0.14),
+    0 0 14px rgba(222, 12, 28, 0.12);
 
-  opacity: 0.85;
+  opacity: 0.92;
+
+  /* Pulse cue (softer than Discover) */
+  animation: el32-homehint-pulse 2600ms ease-in-out infinite;
+  will-change: box-shadow, transform, opacity;
 }
 
-@media (max-width: 520px) {
+/* Softer, slower “breathe” than Discover */
+@keyframes el32-homehint-pulse {
+  0%, 100% {
+    opacity: 0.88;
+    transform: scale(0.99);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.10) inset,
+      0 0 14px rgba(237, 203, 19, 0.14),
+      0 0 22px rgba(212, 28, 139, 0.12),
+      0 0 32px rgba(222, 12, 28, 0.10);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+      0 0 22px rgba(237, 203, 19, 0.24),
+      0 0 34px rgba(212, 28, 139, 0.20),
+      0 0 46px rgba(222, 12, 28, 0.16);
+  }
+}
+
+/* Reduced motion: keep it polished but static */
+@media (prefers-reduced-motion: reduce) {
   .page__logo-hint {
-    margin-top:-5px;
-    font-size: 11px;
-    letter-spacing: 0.20em;
+    animation: none;
+    opacity: 0.95;
   }
 }
 

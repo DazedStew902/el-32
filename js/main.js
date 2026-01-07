@@ -13,41 +13,66 @@
 ===================================================================== */
 
 /* =====================================================================
-   1) El 32 — Ambient Light Field Driver (Performance Patch)
-   - Keep transform drift smooth
-   - Throttle expensive SVG turbulence updates heavily (or disable on mobile/iOS)
-   - Reduce per-frame allocations + redundant CSS variable writes
+   1) El 32 — Ambient Light Field Driver (Cheap-by-Default)
+   Goals:
+   - Keep the SAME aesthetic (moving “club lights”)
+   - Make it cheaper for Safari/Chromium by default
+   - Enable “Ultra” mode (SVG displacement + blend) only on high-end setups
+
+   Output:
+   - Adds one class to <html>:
+       .fx-cheap  (default on most browsers/devices)
+       .fx-ultra  (desktop, non-iOS, higher-core devices)
 ===================================================================== */
 
 (() => {
   "use strict";
+
+  /* =========================================================
+     FX Quality Gate (Cheap-by-default)
+  ========================================================== */
+  const root = document.documentElement;
 
   const prefersReducedMotion =
     window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
   const isMobile = window.matchMedia?.("(max-width: 520px)")?.matches ?? false;
 
-  const lightfield = document.querySelector(".lightfield");
-  const turbulence = document.getElementById("el32-turbulence");
-  if (!lightfield) return;
-
-  // Motion tuning (UNCHANGED behavior)
-  const AMP_X = prefersReducedMotion ? 8 : (isMobile ? 26 : 60);
-  const AMP_Y = prefersReducedMotion ? 6 : (isMobile ? 18 : 42);
-
-  // SVG turbulence tuning (THIS is the expensive part)
   const isIOSSafari =
     /iP(hone|ad|od)/.test(navigator.platform) ||
     (navigator.userAgent.includes("Mac") && "ontouchend" in document);
 
-  const ENABLE_TURBULENCE = !prefersReducedMotion && !isMobile && !isIOSSafari;
+  const lowCoreDevice = (navigator.hardwareConcurrency || 4) <= 4;
 
-  const TURB_UPDATE_MS = 140; // ~7fps even on desktop (much cheaper than 30fps)
+  // Ultra only on higher-end environments
+  const ultraOK =
+    !prefersReducedMotion && !isMobile && !isIOSSafari && !lowCoreDevice;
+
+  root.classList.toggle("fx-ultra", ultraOK);
+  root.classList.toggle("fx-cheap", !ultraOK);
+
+  /* =========================================================
+     Ambient Driver
+     - Transform-only drift (cheap)
+     - Turbulence updates ONLY in ultra mode (expensive)
+  ========================================================== */
+  const lightfield = document.querySelector(".lightfield");
+  const turbulence = document.getElementById("el32-turbulence");
+  if (!lightfield) return;
+
+  // Motion tuning (same “feel”, lower churn on cheap mode)
+  const AMP_X = prefersReducedMotion ? 8 : (isMobile ? 24 : 56);
+  const AMP_Y = prefersReducedMotion ? 6 : (isMobile ? 16 : 40);
+
+  const ENABLE_TURBULENCE = ultraOK && !!turbulence;
+
+  // SVG turbulence tuning (expensive; ultra only)
+  const TURB_UPDATE_MS = 160; // ~6fps, keeps the effect but cheaper
   const BASE_FREQ_X = 0.012;
   const BASE_FREQ_Y = 0.018;
-  const TURB_VARIANCE = prefersReducedMotion ? 0.0004 : 0.0022;
+  const TURB_VARIANCE = prefersReducedMotion ? 0.0004 : 0.0020;
 
-  // Drift frame throttle (~30fps)
+  // Drift frame throttle (~30fps to reduce main-thread churn)
   const FRAME_MIN_MS = 33;
 
   let rafId = null;
@@ -62,7 +87,6 @@
   const nearlyEqual = (a, b, eps) => Math.abs(a - b) <= eps;
 
   const tick = (time) => {
-    // Keep drift ~30fps
     if (time - lastFrame < FRAME_MIN_MS) {
       rafId = requestAnimationFrame(tick);
       return;
@@ -71,7 +95,7 @@
 
     const t = time * 0.001;
 
-    // Closed-loop travel + organic oscillation (UNCHANGED math)
+    // Closed-loop travel + organic oscillation (keeps your same vibe)
     const travelX = Math.sin(t * 0.10) * (AMP_X * 0.55);
     const travelY = Math.cos(t * 0.09) * (AMP_Y * 0.55);
 
@@ -87,31 +111,29 @@
 
     const rotation = Math.sin(t * 0.12) * (prefersReducedMotion ? 0.2 : 1.0);
 
-    // Only write CSS variables when the value meaningfully changes
-    // (reduces Safari main-thread style churn; visuals remain identical)
-    if (!nearlyEqual(x, lastX, 0.05)) {
+    // Only write CSS vars when value meaningfully changes
+    if (!nearlyEqual(x, lastX, 0.06)) {
       lightfield.style.setProperty("--lf-x", `${x}px`);
       lastX = x;
     }
 
-    if (!nearlyEqual(y, lastY, 0.05)) {
+    if (!nearlyEqual(y, lastY, 0.06)) {
       lightfield.style.setProperty("--lf-y", `${y}px`);
       lastY = y;
     }
 
-    if (!nearlyEqual(rotation, lastR, 0.01)) {
+    if (!nearlyEqual(rotation, lastR, 0.012)) {
       lightfield.style.setProperty("--lf-r", `${rotation}deg`);
       lastR = rotation;
     }
 
-    // Update SVG turbulence VERY slowly (or not at all on mobile/iOS)
-    if (ENABLE_TURBULENCE && turbulence && time - lastTurb > TURB_UPDATE_MS) {
+    // Ultra-only: turbulence updates (slow)
+    if (ENABLE_TURBULENCE && time - lastTurb > TURB_UPDATE_MS) {
       lastTurb = time;
 
       const freqX = BASE_FREQ_X + Math.sin(t * 0.22) * TURB_VARIANCE;
       const freqY = BASE_FREQ_Y + Math.cos(t * 0.19) * TURB_VARIANCE;
 
-      // Avoid toFixed() allocations; attribute string is fine as-is
       turbulence.setAttribute("baseFrequency", `${freqX} ${freqY}`);
     }
 
@@ -134,13 +156,13 @@
   // Start
   start();
 
-  // Pause/resume when tab visibility changes (UNCHANGED behavior)
+  // Pause/resume when tab visibility changes
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) stop();
     else start();
   });
 
-  // Extra safety on iOS (bfcache + page lifecycle)
+  // Page lifecycle safety
   window.addEventListener("pagehide", stop, { passive: true });
   window.addEventListener("pageshow", start, { passive: true });
 })();
@@ -171,9 +193,17 @@
   let isOpen = false;
   let hideTimer = null;
 
+  /* =========================================================
+   Performance mode:
+   - When menu is open, reduce expensive FX paints (Safari)
+========================================================= */
+const setPerfMode = (on) => {
+  document.documentElement.classList.toggle("menu-open", on);
+};
+
   // Match your CSS close timing:
   // .menu__panel transition: max-height 520ms ...
-  const HIDE_AFTER_CLOSE_MS = 540;
+  const HIDE_AFTER_CLOSE_MS = 460;
 
   const setState = (open) => {
     isOpen = open;
@@ -188,6 +218,8 @@
 
   const openMenu = () => {
     if (isOpen) return;
+
+    setPerfMode(true);
 
     // Ensure panel can animate (removes UA display:none from [hidden])
     panel.hidden = false;
@@ -209,6 +241,8 @@
     if (!isOpen) return;
 
     setState(false);
+
+    setPerfMode(false);
 
     // Re-apply hidden after the close animation completes
     hideTimer = window.setTimeout(() => {
